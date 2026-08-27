@@ -21,8 +21,10 @@
   <script>
     const button=document.querySelector('.menu-button');
     const menu=document.querySelector('#site-menu');
+    const closeMenu=()=>{menu.classList.remove('open');button.classList.remove('open');button.setAttribute('aria-expanded','false');};
     button.addEventListener('click',()=>{const open=menu.classList.toggle('open');button.classList.toggle('open',open);button.setAttribute('aria-expanded',String(open));});
-    menu.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{menu.classList.remove('open');button.classList.remove('open');button.setAttribute('aria-expanded','false');}));
+    menu.querySelectorAll('a').forEach(link=>link.addEventListener('click',closeMenu));
+    window.addEventListener('scroll',()=>{if(menu.classList.contains('open'))closeMenu();},{passive:true});
   </script>
 </body>
 </html>
