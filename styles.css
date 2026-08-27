@@ -37,6 +37,30 @@ body{font-size:17px}
   .refund-note p{font-size:16px;line-height:1.7}
   .assignment-copy>p:not(.kicker){font-size:17px}.assignment-copy li{font-size:17px}
   .download-card p,.download-card span,.download-card>small{font-size:14px}.download-card h3{font-size:23px}.download-card .assignment-downloads a{font-size:17px}
+  .lesson-columns header>span{font-size:14px}.lesson-columns header strong{font-size:26px}.lesson-columns header small{font-size:14px}.lesson-columns time{font-size:15px}.lesson-columns p span{font-size:17px;line-height:1.55}
   .files-grid p{font-size:13px}.files-grid h3{font-size:18px}.files-grid div>span{font-size:14px}
   footer p,footer div span,footer small{font-size:14px}
 }
+
+/* Hamburger menu stays visible on both desktop and mobile */
+.topbar{position:sticky;top:0;z-index:100;justify-content:flex-start;gap:10px}
+.menu-button{display:block}
+.topbar nav{display:none;position:absolute;left:clamp(14px,6vw,88px);top:68px;width:min(330px,calc(100vw - 28px));background:#fff;border:1px solid #dfe6ed;border-radius:8px;box-shadow:0 16px 36px rgba(16,45,79,.18);padding:8px 16px 16px}
+.topbar nav.open{display:grid}
+.topbar nav a{padding:15px 10px;border-bottom:1px solid #e8edf2;font-size:17px}
+.topbar nav a:last-child{border-bottom:0}
+@media(max-width:800px){.topbar nav{left:14px;right:14px;top:64px;width:auto}}
+
+.menu-button{color:var(--ink);font-size:30px;font-weight:700;line-height:1;text-align:center}
+.menu-button.open{color:var(--orange)}
+.program-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:28px 0}
+.program-day{border:1px solid var(--line);background:#fff}
+.program-title{display:flex;gap:15px;align-items:center;padding:20px 22px;background:var(--ink);color:#fff}
+.program-title>b,.program-workshop>b{color:#ff9364;font-size:14px}
+.program-title span{display:grid;gap:4px}.program-title strong{font-size:21px}.program-title small{font-size:13px;color:#b8c8d6}
+.program-lessons{padding:10px 22px}.program-lessons p{display:grid;grid-template-columns:110px 1fr;gap:14px;margin:0;padding:15px 0;border-bottom:1px solid #edf0f3}
+.program-lessons p:last-child{border-bottom:0}.program-lessons time{color:var(--orange);font-size:14px;font-weight:800}.program-lessons span{font-size:16px;color:#3f5367}
+.program-workshop{display:flex;align-items:center;gap:16px;padding:21px 22px;background:#f3f7fa;border-left:4px solid var(--orange)}
+.program-workshop div{display:grid;gap:6px}.program-workshop strong{font-size:17px;color:var(--ink)}.program-workshop span{font-size:14px;color:#68798a}
+@media(max-width:800px){.program-grid{grid-template-columns:1fr}.program-lessons p{grid-template-columns:105px 1fr}.program-lessons time{font-size:15px}.program-lessons span{font-size:17px;line-height:1.5}.program-workshop strong{font-size:18px}.program-workshop span{font-size:16px;line-height:1.5}}
+@media(max-width:420px){.program-lessons{padding:8px 16px}.program-lessons p{grid-template-columns:1fr;gap:5px}.program-title{padding:18px}.program-title strong{font-size:20px}}
