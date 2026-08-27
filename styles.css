@@ -9,3 +9,34 @@
 .line-join{max-width:1050px;margin:24px auto 0;padding:24px 26px;background:#eefaf2;border:1px solid #ccebd6;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center}.line-icon{width:58px;height:58px;border-radius:15px;background:#06c755;color:#fff;display:grid;place-items:center}.line-copy p{margin:0 0 4px;color:#079542;font-size:11px;font-weight:900;letter-spacing:.12em}.line-copy h2{margin:0 0 6px;color:#123b28;font-size:20px}.line-copy span{font-size:13px;color:#537061;line-height:1.7}.line-join>a{background:#06c755;color:#fff;padding:14px 18px;font-size:14px;font-weight:900;display:flex;align-items:center;gap:14px;border-radius:5px;white-space:nowrap}.line-join>a:hover{background:#05b64d}.line-join>a span{font-size:20px;line-height:1}
 @media(max-width:800px){.line-join{margin:20px 18px 0;grid-template-columns:auto 1fr}.line-join>a{grid-column:1/-1;justify-content:center}}
 @media(max-width:480px){.line-join{padding:20px 18px}.line-icon{width:48px;height:48px}.line-copy h2{font-size:17px}}
+
+/* GitHub Pages mobile navigation and improved reading size */
+.menu-button{display:none;width:44px;height:44px;padding:10px;border:0;background:transparent;cursor:pointer;flex:none}
+.menu-button span{display:block;width:24px;height:2px;margin:5px auto;background:var(--ink);transition:.2s}
+.menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-button.open span:nth-child(2){opacity:0}
+.menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+body{font-size:17px}
+.lead{font-size:18px}.alert-strip p{font-size:16px}.topbar nav{font-size:16px}
+.essential>p,.essential>span,.timeline article>span,.timeline article>small,.download-card p,.download-card span,.files-grid p,.files-grid div>span{font-size:14px}
+.assignment-copy>p:not(.kicker),.assignment-copy li,.download-card a,.line-join>a{font-size:16px}
+.line-copy span,.info-section p{font-size:15px}.files-grid h3{font-size:19px}
+
+@media(max-width:800px){
+  .topbar{position:sticky;top:0;z-index:100;padding:0 14px;justify-content:flex-start;gap:7px}
+  .menu-button{display:block}
+  .brand{gap:9px}.brand-mark{width:36px;height:36px;font-size:21px}.brand strong{font-size:17px}.brand small{font-size:12px}
+  .topbar nav{display:none;position:absolute;left:0;right:0;top:66px;background:#fff;border-top:1px solid #e7edf2;box-shadow:0 14px 28px rgba(16,45,79,.16);padding:8px 18px 18px}
+  .topbar nav.open{display:grid}
+  .topbar nav a{padding:15px 12px;border-bottom:1px solid #e8edf2;font-size:17px}
+  .lead{font-size:18px;line-height:1.8}.alert-strip p{font-size:16px}
+  .line-copy p{font-size:13px}.line-copy h2{font-size:21px}.line-copy span{font-size:16px}.line-join>a{font-size:17px}
+  .section-heading>p,.kicker{font-size:14px}.section-heading span{font-size:16px}
+  .essential>p{font-size:14px}.essential>span{font-size:15px}.essential h3{font-size:23px}
+  .timeline article>span{font-size:15px}.timeline article>small{font-size:14px}.timeline h4{font-size:18px}
+  .refund-note p{font-size:16px;line-height:1.7}
+  .assignment-copy>p:not(.kicker){font-size:17px}.assignment-copy li{font-size:17px}
+  .download-card p,.download-card span,.download-card>small{font-size:14px}.download-card h3{font-size:23px}.download-card .assignment-downloads a{font-size:17px}
+  .files-grid p{font-size:13px}.files-grid h3{font-size:18px}.files-grid div>span{font-size:14px}
+  footer p,footer div span,footer small{font-size:14px}
+}
