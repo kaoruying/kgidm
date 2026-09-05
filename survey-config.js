@@ -1,1 +1,1 @@
-window.SURVEY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyVZiGtrQ1j8b7ZIRE2bx5yiwW_zx042N7bd9Nf5yxO8_dRqJ4oJbjEWDUV8fGtnF9wXQ/exec';
+window.SURVEY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw2FGvqlBXC63c8jlFHKgbnYODHGQoQYzI3JA2rf0uTzxa_T_Gnx4QYZtThNVoRxa4tsg/exec';
