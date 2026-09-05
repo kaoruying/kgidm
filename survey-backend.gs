@@ -16,20 +16,26 @@ function doPost(e) {
     if (!sheet) throw new Error('找不到工作表：' + SHEET_NAME);
 
     const p = (e && e.parameter) ? e.parameter : {};
+    const unit = String(p.unit || '').trim().slice(0, 100);
+    const name = String(p.name || '').trim().slice(0, 100);
     const q1 = normalizeScore_(p.q1);
     const q2 = normalizeScore_(p.q2);
     const q3 = normalizeScore_(p.q3);
-    const workshop = String(p.workshop || '').trim().slice(0, 1200);
+    const courseFeedback = String(p.courseFeedback || '').trim().slice(0, 2000);
+    const workshop = String(p.workshop || '').trim().slice(0, 2000);
 
-    if (!q1 || !q2 || !q3) {
-      return json_({ ok: false, message: '三題評分皆為必填，請確認後再送出。' });
+    if (!unit || !name || !q1 || !q2 || !q3) {
+      return json_({ ok: false, message: '請完成通訊處、姓名及三題評分後再送出。' });
     }
 
     sheet.appendRow([
       new Date(),
+      unit,
+      name,
       q1,
       q2,
       q3,
+      courseFeedback,
       workshop
     ]);
 
