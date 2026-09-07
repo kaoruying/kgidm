@@ -61,8 +61,14 @@
       <section class="question" data-question="q1"><div class="q-top"><div class="q-no">1</div><div class="q-copy"><h3>講師授課內容的專業度 <span class="required">＊</span></h3><p>請依您對講師專業表現的整體感受評分。</p></div></div><div class="score-scale" role="radiogroup" aria-label="講師授課內容的專業度"></div><div class="scale-labels"><span>10｜非常滿意</span><span>1｜非常不滿意</span></div><input type="hidden" name="q1" required></section>
       <section class="question" data-question="q2"><div class="q-top"><div class="q-no">2</div><div class="q-copy"><h3>講師授課內容對通訊處經營實務的幫助程度 <span class="required">＊</span></h3><p>請評估本次授課內容對實際通訊處經營的幫助程度。</p></div></div><div class="score-scale" role="radiogroup" aria-label="講師授課內容對通訊處經營實務的幫助程度"></div><div class="scale-labels"><span>10｜非常滿意</span><span>1｜非常不滿意</span></div><input type="hidden" name="q2" required></section>
       <section class="question" data-question="q3"><div class="q-top"><div class="q-no">3</div><div class="q-copy"><h3>整體而言，您對本次講師授課的滿意程度 <span class="required">＊</span></h3><p>請以整體學習感受進行評分。</p></div></div><div class="score-scale" role="radiogroup" aria-label="整體而言，您對本次講師授課的滿意程度"></div><div class="scale-labels"><span>10｜非常滿意</span><span>1｜非常不滿意</span></div><input type="hidden" name="q3" required></section>
-      <section class="question"><div class="q-top"><div class="q-no">4</div><div class="q-copy"><h3>這兩天課程中，您的主要學習收穫或建議是什麼？</h3><p>歡迎分享對您最有幫助的內容，或提供後續課程優化建議。</p></div></div><textarea name="courseFeedback" maxlength="2000" placeholder="請自由填寫您的學習收穫或建議"></textarea></section>
-      <section class="question"><div class="q-top"><div class="q-no">5</div><div class="q-copy"><h3>後續 Workshop，您期待以什麼樣的方式進行，或希望加入哪些內容？</h3><p>歡迎依您的實際需求自由填寫。</p></div></div><textarea name="workshop" maxlength="2000" placeholder="例如：實際案例討論、績優主管經驗交流、分組會診……"></textarea></section>
+
+      <section class="question"><div class="q-top"><div class="q-no">4</div><div class="q-copy"><h3>這兩天課程中，您的主要學習收穫是什麼？您預計如何帶回通訊處實際運用？</h3><p>歡迎分享對您最有幫助的內容，以及後續準備如何落實於通訊處經營。</p></div></div><textarea name="learningApplication" maxlength="2000" placeholder="請分享您的主要學習收穫與實際運用想法"></textarea></section>
+
+      <section class="question"><div class="q-top"><div class="q-no">5</div><div class="q-copy"><h3>針對本次兩天課程，您是否有其他建議或希望調整的地方？</h3><p>歡迎提供課程內容、授課方式或其他面向的建議。</p></div></div><textarea name="courseSuggestion" maxlength="2000" placeholder="請自由填寫您的課程建議"></textarea></section>
+
+      <section class="question"><div class="q-top"><div class="q-no">6</div><div class="q-copy"><h3>後續 Workshop，您期待以什麼樣的方式進行，或希望加入哪些內容？</h3><p>歡迎依您的實際需求自由填寫。</p></div></div><textarea name="workshop" maxlength="2000" placeholder="例如：實際案例討論、績優主管經驗交流、分組會診……"></textarea></section>
+
+      <input type="hidden" id="courseFeedbackCombined" name="courseFeedback">
       <div class="actions"><button class="submit" id="submitBtn" type="submit">送出問卷</button><p class="status" id="status" role="status" aria-live="polite"></p></div>
     </form>
   </section>
@@ -96,6 +102,7 @@
   const participantSelect=document.getElementById('participant');
   const unitInput=document.getElementById('unit');
   const nameInput=document.getElementById('name');
+  const courseFeedbackCombined=document.getElementById('courseFeedbackCombined');
   const statusBox=document.getElementById('status');
   const submitBtn=document.getElementById('submitBtn');
   const card=document.getElementById('card');
@@ -152,6 +159,14 @@
     if(!participantSelect.value){showStatus('請選擇您的通訊處 姓名。','error');participantSelect.focus();return}
     const missing=[...form.querySelectorAll('input[type="hidden"][required]')].find(x=>!x.value);
     if(missing){missing.closest('.question').scrollIntoView({behavior:'smooth',block:'center'});showStatus('請完成三題評分後再送出。','error');return}
+
+    const learning=form.elements.learningApplication.value.trim();
+    const suggestion=form.elements.courseSuggestion.value.trim();
+    courseFeedbackCombined.value=[
+      learning ? '【學習收穫與實務運用】\n'+learning : '',
+      suggestion ? '【課程建議】\n'+suggestion : ''
+    ].filter(Boolean).join('\n\n');
+
     const endpoint=window.SURVEY_ENDPOINT||'';
     if(!endpoint){showStatus('問卷資料接收端尚未啟用，請洽業務訓練部。','info');return}
     submitBtn.disabled=true;submitBtn.textContent='送出中…';
