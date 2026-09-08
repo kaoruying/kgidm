@@ -1,4 +1,4 @@
-window.SURVEY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw2FGvqlBXC63c8jlFHKgbnYODHGQoQYzI3JA2rf0uTzxa_T_Gnx4QYZtThNVoRxa4tsg/exec';
+window.SURVEY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx-v2P2iN1i031gGrKYTSLXIQiGx-OARcBk5u6tRhCoZj5iJMyYVIyo4LNhDMUy4yRbUg/exec';
 
 (() => {
   const questions = document.querySelectorAll('.question');
