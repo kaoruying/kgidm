@@ -1,6 +1,6 @@
 const SPREADSHEET_ID = '1lQHX1ieNTGlv8heXT6yqlXER220M8kfbwTsiUYLYAy0';
 const SHEET_NAME = '問卷回覆';
-const SCHEMA_VERSION = '2026-09-08-v4';
+const SCHEMA_VERSION = '2026-09-08-v5';
 
 const HEADERS = [
   '提交時間',
@@ -8,9 +8,9 @@ const HEADERS = [
   '姓名',
   '講師授課內容的專業度',
   '講師授課內容對通訊處經營實務的幫助程度',
-  '整體而言，您對本次講師授課的滿意程度',
-  '這兩天課程中，您的主要學習收穫是什麼？您預計如何帶回通訊處實際運用？',
-  '針對本次兩天課程，您是否有其他建議或希望調整的地方？',
+  '整體而言，您對本次課程滿意程度',
+  '本次課程您的主要學習收穫是什麼？您預計如何帶回通訊處實際運用？',
+  '針對本次課程，您是否有其他回饋建議或希望調整的地方？',
   '後續 Workshop，您期待以什麼樣的方式進行，或希望加入哪些內容？'
 ];
 
@@ -41,8 +41,6 @@ function doPost(e) {
     const q2 = normalizeScore_(p.q2);
     const q3 = normalizeScore_(p.q3);
 
-    // 新版前台會分別送出這三個欄位。
-    // learningApplication 保留對舊版 courseFeedback 的相容性，但不再把課程建議混在同一格。
     const learningApplication = cleanText_(p.learningApplication || p.courseFeedback, 2000);
     const courseSuggestion = cleanText_(p.courseSuggestion, 2000);
     const workshop = cleanText_(p.workshop, 2000);
@@ -67,7 +65,6 @@ function doPost(e) {
       workshop
     ];
 
-    // 明確指定 A:I，確保每一題都有獨立欄位，不再合併。
     sheet.getRange(sheet.getLastRow() + 1, 1, 1, HEADERS.length).setValues([row]);
 
     return json_({
