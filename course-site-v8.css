@@ -105,3 +105,59 @@ body{font-size:17px}
 /* Make the notice action unmistakably clickable */
 .button.secondary{background:#fff;color:var(--ink);border:1px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.16)}
 .button.secondary:hover{background:#eaf1f8;border-color:#eaf1f8;transform:translateY(-1px)}
+
+
+/* Workshop 1 deadline emphasis */
+.deadline-date{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 5px;
+  padding:4px 10px;
+  border-radius:8px;
+  background:#fff0e8;
+  color:#d95720;
+  border:1px solid rgba(237,106,44,.28);
+  font-size:20px;
+  font-weight:900;
+  line-height:1.25;
+  letter-spacing:.02em;
+  white-space:nowrap;
+  vertical-align:middle;
+}
+.alert-strip .deadline-date{
+  background:var(--orange);
+  color:#fff;
+  border-color:var(--orange);
+  font-size:22px;
+  padding:5px 12px;
+  box-shadow:0 4px 10px rgba(237,106,44,.22);
+}
+.assignment-copy li>div{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:4px;
+}
+.assignment-copy li .deadline-date{
+  margin-left:0;
+  font-size:19px;
+}
+.download-card>a .deadline-date.deadline-on-button{
+  margin:0 4px 0 0;
+  padding:3px 8px;
+  background:#fff;
+  color:var(--orange);
+  border-color:#fff;
+  font-size:17px;
+}
+.download-card>small .deadline-date.deadline-small{
+  margin:0 3px;
+  padding:2px 7px;
+  font-size:15px;
+  border-radius:6px;
+}
+@media(max-width:800px){
+  .alert-strip .deadline-date{font-size:21px}
+  .assignment-copy li .deadline-date{font-size:19px}
+}
