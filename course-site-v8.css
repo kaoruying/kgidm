@@ -1174,3 +1174,75 @@ body{font-size:17px}
     line-height:1.6;
   }
 }
+
+
+/* Mobile journey stack fix v4 */
+@media(max-width:800px){
+  .journey-main{
+    display:block!important;
+  }
+
+  .journey-card time,
+  .journey-card.completed time,
+  .journey-card.current time{
+    display:block!important;
+    width:100%!important;
+    margin:0 0 8px!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  .journey-copy{
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  .journey-copy h3,
+  .journey-card.completed h3,
+  .journey-card.current h3{
+    display:block!important;
+    width:100%!important;
+    margin:0 0 6px!important;
+  }
+
+  .journey-copy p,
+  .journey-card.completed p,
+  .journey-card.current p{
+    display:block!important;
+    width:100%!important;
+    margin:0!important;
+  }
+}
+
+@media(max-width:480px){
+  .journey-card{
+    padding:16px 15px!important;
+  }
+
+  .journey-card.current{
+    padding:18px 16px!important;
+  }
+
+  .journey-status{
+    margin-bottom:10px!important;
+  }
+
+  .journey-card time,
+  .journey-card.completed time{
+    font-size:18px!important;
+  }
+
+  .journey-card.current time{
+    font-size:25px!important;
+  }
+
+  .journey-copy h3,
+  .journey-card.completed h3{
+    font-size:18px!important;
+  }
+
+  .journey-card.current .journey-copy h3{
+    font-size:21px!important;
+  }
+}
