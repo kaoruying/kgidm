@@ -1,0 +1,37 @@
+name: Sync Workshop Files
+
+on:
+  push:
+    paths:
+      - '.github/workflows/sync-workshop-files.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download workshop files
+        run: |
+          mkdir -p files
+          curl -L --fail --retry 3 "https://drive.google.com/uc?export=download&id=1RScIV1cgECgP6Z2cnbX1Mc1seSox8IqS" -o files/workshop1-tracking-form.docx
+          curl -L --fail --retry 3 "https://drive.google.com/uc?export=download&id=1j3sn6po-WLaX10CNZ3u8cI7pV3DiP7Y0" -o files/workshop1-tracking-form.pdf
+          test "$(head -c 2 files/workshop1-tracking-form.docx)" = "PK"
+          test "$(head -c 4 files/workshop1-tracking-form.pdf)" = "%PDF"
+
+      - name: Commit files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add files/workshop1-tracking-form.docx files/workshop1-tracking-form.pdf
+          if git diff --cached --quiet; then
+            echo "No file changes"
+          else
+            git commit -m "Host Workshop 1 download files [skip ci]"
+            git push
+          fi
