@@ -695,3 +695,128 @@ body{font-size:17px}
     font-size:17px;
   }
 }
+
+
+/* Workshop 1 task card layout v2 */
+.task-cards{
+  display:grid;
+  gap:14px;
+  margin-top:28px;
+}
+.task-card{
+  background:#fff;
+  border:1px solid #e1e7ed;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 6px 18px rgba(16,45,79,.05);
+}
+.task-card-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.task-no{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  border-radius:50%;
+  background:var(--ink);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  font-weight:900;
+  line-height:1;
+}
+.task-date{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  padding:0 14px;
+  border-radius:999px;
+  background:#fff3eb;
+  border:1px solid #f3c9b0;
+  color:var(--orange);
+  font-size:17px;
+  font-weight:900;
+  line-height:1;
+  white-space:nowrap;
+}
+.task-card h3{
+  margin:0 0 8px;
+  color:var(--ink);
+  font-size:19px;
+  line-height:1.5;
+}
+.task-card p{
+  margin:0;
+  color:#6f7f8f;
+  font-size:15px;
+  line-height:1.75;
+}
+.task-card-important{
+  border:2px solid var(--orange);
+  background:#fff8f3;
+  box-shadow:0 9px 24px rgba(237,106,44,.10);
+}
+.task-card-important h3{
+  color:#b94a19;
+}
+.task-date-important{
+  background:var(--orange);
+  border-color:var(--orange);
+  color:#fff;
+  font-size:20px;
+}
+@media(max-width:800px){
+  .task-cards{
+    margin-top:22px;
+    gap:12px;
+  }
+  .task-card{
+    padding:17px 16px;
+    border-radius:14px;
+  }
+  .task-card-head{
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .task-no{
+    width:40px;
+    height:40px;
+    flex-basis:40px;
+    font-size:14px;
+  }
+  .task-date{
+    min-height:38px;
+    padding:0 13px;
+    font-size:16px;
+  }
+  .task-date-important{
+    font-size:18px;
+  }
+  .task-card h3{
+    font-size:17px;
+  }
+  .task-card p{
+    font-size:14px;
+    line-height:1.7;
+  }
+}
+@media(max-width:480px){
+  .task-card{
+    padding:16px 14px;
+  }
+  .task-card-head{
+    flex-wrap:nowrap;
+  }
+  .task-date{
+    max-width:calc(100% - 52px);
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+}
