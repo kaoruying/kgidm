@@ -21,14 +21,16 @@ jobs:
           mkdir -p files
           curl -L --fail --retry 3 "https://drive.google.com/uc?export=download&id=1RScIV1cgECgP6Z2cnbX1Mc1seSox8IqS" -o files/workshop1-tracking-form.docx
           curl -L --fail --retry 3 "https://drive.google.com/uc?export=download&id=1j3sn6po-WLaX10CNZ3u8cI7pV3DiP7Y0" -o files/workshop1-tracking-form.pdf
+          curl -L --fail --retry 3 "https://drive.google.com/uc?export=download&id=1mwV1rNqJZBozbPugHenCNRJWc6gg1LDz" -o files/workshop1-filling-guide.pdf
           test "$(head -c 2 files/workshop1-tracking-form.docx)" = "PK"
           test "$(head -c 4 files/workshop1-tracking-form.pdf)" = "%PDF"
+          test "$(head -c 4 files/workshop1-filling-guide.pdf)" = "%PDF"
 
       - name: Commit files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add files/workshop1-tracking-form.docx files/workshop1-tracking-form.pdf
+          git add files/workshop1-tracking-form.docx files/workshop1-tracking-form.pdf files/workshop1-filling-guide.pdf
           if git diff --cached --quiet; then
             echo "No file changes"
           else
