@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="course-site-v8.css">
 </head>
 <body>
-  <header class="topbar"><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false" aria-controls="site-menu">☰</button><a class="brand" href="#top"><span class="brand-mark">K</span><span><strong>企業家經營班</strong><small>學員資訊站</small></span></a><nav id="site-menu"><a href="#notice">課程歷程</a><a href="#workshop">工作坊表單</a><a href="#files">文件下載</a></nav></header>
+  <header class="topbar"><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false" aria-controls="site-menu">☰</button><a class="brand" href="#top"><span class="brand-mark">K</span><span><strong>企業家經營班</strong><small>學員資訊站</small></span></a><nav id="site-menu"><a href="#notice">課程歷程</a><a href="#workshop">工作坊表單</a><a href="#workshop-upload">上傳作業</a><a href="#files">文件下載</a></nav></header>
   <main>
     <section class="hero current-hero" id="top">
       <div class="hero-copy">
@@ -81,6 +81,52 @@
         <h2>工作坊任務</h2>
         <p class="workshop-intro">回到單位後，請把課堂中的經營思考轉成實際行動。從設定焦點、每週追蹤到成果回顧，讓 10/30 工作坊有真實經營素材可以討論。</p>
 
+        <div class="fill-guide">
+          <div class="fill-guide-head">
+            <span>填寫範例說明</span>
+            <strong>不知道怎麼寫？先看這裡</strong>
+            <p>依照表單順序整理成 5 個重點，手機點開即可查看。</p>
+          </div>
+
+          <details class="guide-item" open>
+            <summary><b>01</b><span>先找到本階段經營焦點</span></summary>
+            <div class="guide-body">
+              <p>先選一項「7 週內可觀察、可量化」的組織人力指標，現況、目標與差距請使用同一口徑。</p>
+              <div class="guide-example"><strong>範例</strong>啟專數：現況 2 人 → 目標 6 人，差距 4 人。</div>
+            </div>
+          </details>
+
+          <details class="guide-item">
+            <summary><b>02</b><span>設定本階段經營策略</span></summary>
+            <div class="guide-body">
+              <p>從原本的策略與行動計畫中，挑一項本階段最重要的策略。重點不是「做到多少」，而是準備調整哪一種經營或主管帶動方式。</p>
+              <div class="guide-example"><strong>範例</strong>讓主管主動帶動組織發展。</div>
+            </div>
+          </details>
+
+          <details class="guide-item">
+            <summary><b>03</b><span>把策略展開成固定做法</span></summary>
+            <div class="guide-body">
+              <p>分別寫清楚「具體做法／機制、執行節奏、觀察重點」。策略是怎麼帶出改變，不是把例行工作再寫一次。</p>
+              <div class="guide-example"><strong>範例</strong>與主管共訂七週目標，每週固定交流「做法－反應－調整」，並觀察主管是否能主動判斷下一步。</div>
+            </div>
+          </details>
+
+          <details class="guide-item">
+            <summary><b>04</b><span>每週只記錄策略執行情況</span></summary>
+            <div class="guide-body">
+              <p>每週聚焦四件事：做了什麼、觀察到什麼變化／回饋、下週延續或微調、執行狀況。避免寫成工作日誌。</p>
+            </div>
+          </details>
+
+          <details class="guide-item">
+            <summary><b>05</b><span>10/30 帶回來做策略回顧</span></summary>
+            <div class="guide-body">
+              <p>工作坊前請整理：最明顯的變化、最有效的做法與原因、目前仍卡住的地方，以及最希望在工作坊獲得協助的問題。</p>
+            </div>
+          </details>
+        </div>
+
         <div class="task-cards">
           <article class="task-card">
             <div class="task-card-head">
@@ -130,15 +176,20 @@
           <a class="pdf-button" href="files/workshop1-tracking-form.pdf" download="工作坊表單(策略展開與週追蹤表).pdf">下載 PDF 工作坊表單 ↓</a>
         </div>
 
-        <button class="workshop-upload-disabled" type="button" disabled aria-disabled="true">
-          <strong>10/19 上傳工作坊紀錄</strong>
-          <small>尚未開放</small>
-        </button>
-
-        <small class="workshop-note">上傳入口將於後續開放；目前請先下載表單並開始記錄。</small>
+        <div class="workshop-upload-zone" id="workshop-upload">
+          <span class="upload-zone-kicker">作業上傳</span>
+          <h4>10/19 完成第一週～第五週紀錄並上傳</h4>
+          <p>檔案格式不拘，可一次上傳多個檔案，也可以之後再補件；系統會保留每次上傳版本。</p>
+          <a class="workshop-upload-live" href="https://script.google.com/macros/s/AKfycbyFjQ9pnRQoXPFKElmJVhJLjxcQ5WfaBYNReT5DrjjjBbhJAIuZ9E469-IQfBMGHA30/exec?authuser=0" target="_blank" rel="noreferrer">上傳工作坊作業 ↑</a>
+          <small>單一檔案上限 30MB。</small>
+        </div>
       </div>
     </section>
-    <section class="section files-section" id="files"><div class="section-heading left"><p>DOWNLOAD CENTER</p><h2>文件下載</h2><span>目前以工作坊追蹤表為主要使用文件</span></div><div class="files-grid"><article><div class="file-type doc">DOC</div><div><p>工作坊 1｜Word</p><h3>工作坊表單(策略展開與週追蹤表)</h3><span>可編輯 Word 文件，建議使用此版本持續紀錄</span></div><a href="files/workshop1-tracking-form.docx" download="工作坊表單(策略展開與週追蹤表).docx">↓</a></article><article><div class="file-type pdf">PDF</div><div><p>工作坊 1｜PDF</p><h3>工作坊表單(策略展開與週追蹤表)</h3><span>適合直接檢視或列印手寫</span></div><a href="files/workshop1-tracking-form.pdf" download="工作坊表單(策略展開與週追蹤表).pdf">↓</a></article></div></section>
+    <section class="section files-section" id="files"><div class="section-heading left"><p>DOWNLOAD CENTER</p><h2>文件下載</h2><span>目前以工作坊追蹤表為主要使用文件</span></div><div class="files-grid"><article><div class="file-type doc">DOC</div><div><p>工作坊 1｜Word</p><h3>工作坊表單(策略展開與週追蹤表)</h3><span>可編輯 Word 文件，建議使用此版本持續紀錄</span></div><a href="files/workshop1-tracking-form.docx" download="工作坊表單(策略展開與週追蹤表).docx">↓</a></article><article><div class="file-type pdf">PDF</div><div><p>工作坊 1｜PDF</p><h3>工作坊表單(策略展開與週追蹤表)</h3><span>適合直接檢視或列印手寫</span></div><a href="files/workshop1-tracking-form.pdf" download="工作坊表單(策略展開與週追蹤表).pdf">↓</a></article><article class="guide-file-card">
+      <div class="file-type guide">例</div>
+      <div><p>填寫說明</p><h3>工作坊表單填寫範例</h3><span>請回到上方「工作坊任務」查看 5 個填寫重點與範例</span></div>
+      <a href="#workshop" aria-label="查看填寫說明">↑</a>
+    </article></div></section>
   </main>
   <footer><div><strong>企業家經營班</strong><span>業務訓練部</span></div><p>如有課程相關問題，請洽承辦人賴瑩芷<br>02-2719-6678 分機 3360</p><small>最後更新：2026.09.18</small></footer>
   <script>
