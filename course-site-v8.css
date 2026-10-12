@@ -1684,3 +1684,184 @@ body{font-size:17px}
     padding-right:14px!important;
   }
 }
+
+
+/* Filling guide + live upload zone v7 */
+.fill-guide{
+  margin-top:28px;
+  padding:22px;
+  border:1px solid #e1e7ed;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 8px 24px rgba(16,45,79,.06);
+}
+.fill-guide-head{
+  margin-bottom:14px;
+}
+.fill-guide-head>span{
+  display:inline-block;
+  margin-bottom:6px;
+  color:var(--orange);
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.fill-guide-head>strong{
+  display:block;
+  color:var(--ink);
+  font-size:22px;
+  line-height:1.4;
+}
+.fill-guide-head>p{
+  margin:7px 0 0;
+  color:#748396;
+  font-size:14px;
+  line-height:1.7;
+}
+.guide-item{
+  border-top:1px solid #e6ebef;
+}
+.guide-item:first-of-type{
+  border-top:0;
+}
+.guide-item summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:15px 0;
+  color:var(--ink);
+  font-size:16px;
+  font-weight:900;
+}
+.guide-item summary::-webkit-details-marker{display:none}
+.guide-item summary b{
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#edf3f8;
+  color:var(--blue);
+  font-size:12px;
+}
+.guide-item summary:after{
+  content:"+";
+  margin-left:auto;
+  color:var(--orange);
+  font-size:24px;
+  font-weight:500;
+}
+.guide-item[open] summary:after{content:"–"}
+.guide-body{
+  padding:0 0 16px 45px;
+}
+.guide-body p{
+  margin:0;
+  color:#627486;
+  font-size:14px;
+  line-height:1.8;
+}
+.guide-example{
+  margin-top:10px;
+  padding:11px 12px;
+  border-radius:10px;
+  background:#fff6ef;
+  color:#6d513d;
+  font-size:14px;
+  line-height:1.7;
+}
+.guide-example strong{
+  color:var(--orange);
+  margin-right:8px;
+}
+
+.workshop-upload-zone{
+  margin-top:18px;
+  padding:20px;
+  border:2px solid var(--orange);
+  border-radius:14px;
+  background:#fff8f3;
+}
+.upload-zone-kicker{
+  display:block!important;
+  color:var(--orange)!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  letter-spacing:.08em;
+}
+.workshop-upload-zone h4{
+  margin:8px 0 8px;
+  color:var(--ink);
+  font-size:20px;
+  line-height:1.5;
+}
+.workshop-upload-zone p{
+  margin:0;
+  color:#6b7987;
+  font-size:14px;
+  line-height:1.75;
+}
+.download-card .workshop-upload-live{
+  margin-top:16px;
+  min-height:66px;
+  border-radius:12px;
+  background:var(--orange);
+  color:#fff;
+  font-size:18px;
+  font-weight:900;
+}
+.workshop-upload-zone small{
+  display:block;
+  margin-top:9px;
+  text-align:center;
+  color:#8a98a6;
+  font-size:13px;
+}
+.file-type.guide{
+  background:#e57a43;
+}
+.guide-file-card{
+  scroll-margin-top:85px;
+}
+
+@media(max-width:800px){
+  .fill-guide{
+    margin-top:22px;
+    padding:18px 16px;
+    border-radius:15px;
+  }
+  .fill-guide-head>strong{
+    font-size:20px;
+  }
+  .fill-guide-head>p{
+    font-size:15px;
+  }
+  .guide-item summary{
+    min-height:58px;
+    font-size:17px;
+    line-height:1.5;
+  }
+  .guide-body{
+    padding-left:0;
+  }
+  .guide-body p,
+  .guide-example{
+    font-size:15px;
+  }
+  .workshop-upload-zone{
+    padding:18px 16px;
+  }
+  .workshop-upload-zone h4{
+    font-size:20px;
+  }
+  .workshop-upload-zone p{
+    font-size:15px;
+  }
+  .download-card .workshop-upload-live{
+    min-height:68px;
+    font-size:19px;
+  }
+}
