@@ -227,6 +227,12 @@ sortList.addEventListener('lostpointercapture',()=>{
 });
 updateRanks();
 const form=document.getElementById('ranking-form'),send=document.getElementById('send');let pending='';
+let waitTimer=null;
+function resetSubmission(){
+ pending='';
+ if(waitTimer!==null){clearTimeout(waitTimer);waitTimer=null;}
+ send.disabled=false;send.textContent='確認順位並送出';
+}
 form.addEventListener('submit',e=>{
  if(!regionSelect.value||!participantSelect.value){e.preventDefault();feedback.textContent='請先選擇區域中心與單位＋姓名。';feedback.className='feedback error';return;}
  if(cards().length!==4){e.preventDefault();feedback.textContent='主題排序尚未完成。';feedback.className='feedback error';return;}
@@ -234,11 +240,17 @@ form.addEventListener('submit',e=>{
  pending=Date.now()+'-'+Math.random().toString(36).slice(2);
  document.getElementById('token').value=pending;
  send.disabled=true;send.textContent='送出中…';feedback.textContent='正在儲存分組志願…';feedback.className='feedback';
+ waitTimer=setTimeout(()=>{
+  if(!pending)return;
+  resetSubmission();
+  feedback.textContent='未收到後台確認訊息。請先向主辦單位確認試算表有沒有這筆紀錄，避免重複送出。';
+  feedback.className='feedback error';
+ },20000);
 });
 window.addEventListener('message',e=>{
- if(e.origin!=='https://script.google.com'&&!e.origin.endsWith('.googleusercontent.com'))return;
- if(!e.data||e.data.source!=='workshop-ranking'||e.data.token!==pending)return;
- pending='';send.disabled=false;send.textContent='確認順位並送出';
+ // Apps Script 的內嵌頁面有時回報 origin 為 null；使用一次性 token 核對回覆。
+ if(!e.data||e.data.source!=='workshop-ranking'||!pending||e.data.token!==pending)return;
+ resetSubmission();
  feedback.textContent=e.data.message;feedback.className=e.data.ok?'feedback good':'feedback error';
 });
 </script></body></html>
