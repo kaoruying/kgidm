@@ -1,96 +1,103 @@
 /**
- * 企業家經營班｜10/30 工作坊分組意願調查
- *
- * 對外問卷僅顯示四大主題；不揭露與談人姓名及對應關係。
- *
- * 【已有 Google 表單】
- * 1. 將該表單「編輯網址」貼進 EXISTING_FORM_URL（不是 Apps Script /exec 網址）。
- * 2. 在 Apps Script 執行 updateWorkshopPreferenceForm。
- * 3. 程式只更新說明文字及指定題目，不會另建表單或試算表。
- *
- * 【尚未建立 Google 表單】
- * 執行 createWorkshopPreferenceForm。執行紀錄會輸出填寫網址。
- * 同一 Apps Script 專案重複執行時，會沿用先前建立的表單。
+ * 企業家經營班 10/30｜網頁分組志願登記後台
+ * 1. 整份取代原本 Apps Script 程式碼。
+ * 2. 執行 setupWorkshopSheet() 一次，授權後查看執行紀錄的試算表網址。
+ * 3. 「部署 > 管理部署作業 > 編輯 > 版本選新版本 > 部署」。
+ * 4. 學員從 GitHub 網頁填寫，資料直接寫到你的 Google 試算表。
+ * 不需要 Google 表單，且對外不揭露與談人姓名。
  */
-const EXISTING_FORM_URL = '';
-
-const WORKSHOP = {
-  title: '企業家經營班｜10/30 工作坊分組意願調查',
+const SETTINGS = {
+  propertyKey: 'WORKSHOP_RANK_SHEET_ID',
+  tab: '分組志願回覆',
+  headings: ['填寫時間','通訊處','處經理姓名','第一順位','第二順位','第三順位','第四順位'],
   topics: [
     '人才育成與新人定著',
     '願景領導與增員驅動',
     '經營複製與組織擴張',
     '自律領導與團隊自主'
   ],
-  rankings: ['第一順位', '第二順位', '第三順位', '第四順位'],
-  description:
-    '請依目前最希望強化的經營主題，填寫第一至第四順位，每個主題及順位不可重複。\\n' +
-    '工作坊仍以七週策略執行成果分享為主，依分組主題提供不同角度的實務回饋。\\n\\n' +
-    '每組限9人；如優先順位額滿，將依後續順位安排。實際分組由主辦單位統籌決定。'
+  parentOrigin: 'https://kaoruying.github.io'
 };
 
-function getOrAddItem_(form, type, title) {
-  const existing = form.getItems(type).find(item => item.getTitle() === title);
-  if (existing) return existing;
-  // 轉回通用 Item，讓呼叫端可安全使用 asTextItem() / asGridItem()。
-  if (type === FormApp.ItemType.TEXT) return form.getItemById(form.addTextItem().getId());
-  if (type === FormApp.ItemType.GRID) return form.getItemById(form.addGridItem().getId());
-  if (type === FormApp.ItemType.PARAGRAPH_TEXT) return form.getItemById(form.addParagraphTextItem().getId());
-  if (type === FormApp.ItemType.CHECKBOX) return form.getItemById(form.addCheckboxItem().getId());
-  throw new Error('不支援的題目類型');
+function setupWorkshopSheet() {
+  const sheet = getSheet_();
+  Logger.log('後台試算表：https://docs.google.com/spreadsheets/d/' + sheet.getParent().getId() + '/edit');
 }
 
-function configureWorkshopForm_(form) {
-  form.setTitle(WORKSHOP.title);
-  form.setDescription(WORKSHOP.description);
-  form.setConfirmationMessage('已收到您的分組意願，感謝填寫！最終分組將由主辦單位另行通知。');
-
-  getOrAddItem_(form, FormApp.ItemType.TEXT, '通訊處')
-    .asTextItem().setTitle('通訊處').setRequired(true);
-  getOrAddItem_(form, FormApp.ItemType.TEXT, '處經理姓名')
-    .asTextItem().setTitle('處經理姓名').setRequired(true);
-
-  // 舊版如果已經存在相同的排序題，直接更新選項，不另建題目。
-  const grid = getOrAddItem_(form, FormApp.ItemType.GRID,
-    '四大主題志願排序（每個順位及主題都只能使用一次）').asGridItem();
-  grid.setTitle('四大主題志願排序（每個順位及主題都只能使用一次）')
-    .setHelpText('每項主題請選擇不同順位。')
-    .setRows(WORKSHOP.topics).setColumns(WORKSHOP.rankings).setRequired(true);
-
-  // 精簡問卷：移除舊版多餘的開放題、同意勾選題。
-  const unnecessaryTitles = ['您最希望透過工作坊獲得哪一項經營協助？（選填）', '分組安排確認'];
-  form.getItems().filter(item => unnecessaryTitles.includes(item.getTitle()))
-    .forEach(item => form.deleteItem(item));
-
-  form.setAcceptingResponses(true);
-}
-
-function logWorkshopForm_(form) {
-  Logger.log('表單編輯網址：' + form.getEditUrl());
-  Logger.log('學員填寫網址：' + form.getPublishedUrl());
-  Logger.log('請手動確認排序題已開啟「每欄僅限一個回覆」。');
-}
-
-function updateWorkshopPreferenceForm() {
-  if (!EXISTING_FORM_URL.trim()) {
-    throw new Error('請先將已存在的 Google 表單「編輯網址」貼入 EXISTING_FORM_URL；不要貼 Apps Script /exec 網址。');
-  }
-  const form = FormApp.openByUrl(EXISTING_FORM_URL.trim());
-  configureWorkshopForm_(form);
-  PropertiesService.getScriptProperties().setProperty('WORKSHOP_FORM_ID', form.getId());
-  logWorkshopForm_(form);
-}
-
-function createWorkshopPreferenceForm() {
-  const props = PropertiesService.getScriptProperties();
-  const id = props.getProperty('WORKSHOP_FORM_ID');
-  const form = id ? FormApp.openById(id) : FormApp.create(WORKSHOP.title);
-  configureWorkshopForm_(form);
+function getSheet_() {
+  const properties = PropertiesService.getScriptProperties();
+  let id = properties.getProperty(SETTINGS.propertyKey);
+  const spreadsheet = id
+    ? SpreadsheetApp.openById(id)
+    : SpreadsheetApp.create('企業家經營班_1030工作坊_分組意願回覆');
   if (!id) {
-    const ss = SpreadsheetApp.create('企業家經營班_1030工作坊_分組志願回覆');
-    form.setDestination(FormApp.DestinationType.SPREADSHEET, ss.getId());
-    props.setProperty('WORKSHOP_FORM_ID', form.getId());
-    Logger.log('回覆試算表：' + ss.getUrl());
+    id = spreadsheet.getId();
+    properties.setProperty(SETTINGS.propertyKey, id);
   }
-  logWorkshopForm_(form);
+  let sheet = spreadsheet.getSheetByName(SETTINGS.tab);
+  if (!sheet) sheet = spreadsheet.insertSheet(SETTINGS.tab);
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(SETTINGS.headings);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+// Google Apps Script 網頁部署必須含 doGet，可顯示服務狀態。
+function doGet() {
+  return HtmlService.createHtmlOutput('企業家經營班分組回覆服務已啟用。請從學員網頁填寫。');
+}
+
+// 使用原生 HTML 表單跨網域 POST，不需使用者登入 Google 表單。
+function doPost(e) {
+  const p = (e && e.parameter) || {};
+  const token = String(p.token || '').slice(0, 100);
+  try {
+    const unit = String(p.unit || '').trim();
+    const name = String(p.name || '').trim();
+    const ranks = [p.rank1,p.rank2,p.rank3,p.rank4].map(v => String(v || '').trim());
+    if (!unit || !name || unit.length > 70 || name.length > 70) {
+      throw new Error('請填寫通訊處及姓名。');
+    }
+    if (ranks.some(v => !SETTINGS.topics.includes(v)) || new Set(ranks).size !== 4) {
+      throw new Error('請將四個主題排出不重複的第一至第四順位。');
+    }
+    const lock = LockService.getScriptLock();
+    lock.waitLock(15000);
+    try {
+      const sheet = getSheet_();
+      // 同一位學員重複提交，以最後一次填寫的志願為準。
+      let targetRow = sheet.getLastRow() + 1;
+      if (targetRow > 2) {
+        const records = sheet.getRange(2,2,targetRow-2,2).getValues();
+        for (let i=0;i<records.length;i++) {
+          if (String(records[i][0]).trim() === unit &&
+              String(records[i][1]).trim() === name) {
+            targetRow = i + 2;
+            break;
+          }
+        }
+      }
+      // 避免 Google 試算表將以 =,+,-,@ 開頭的輸入當成公式。
+      const safeText = value => /^[=+\-@]/.test(value) ? "'" + value : value;
+      sheet.getRange(targetRow,1,1,7).setValues([[
+        new Date(),safeText(unit),safeText(name),...ranks
+      ]]);
+    } finally {
+      lock.releaseLock();
+    }
+    return respond_(token,true,'已成功送出分組志願。');
+  } catch (err) {
+    return respond_(token,false,err.message || '送出失敗，請稍後再試。');
+  }
+}
+
+function respond_(token,ok,message) {
+  const data = JSON.stringify({source:'workshop-ranking',token:token,ok:ok,message:message})
+    .replace(/</g,'\\u003c');
+  return HtmlService.createHtmlOutput(
+    '<!doctype html><html><body><script>' +
+    'window.parent.postMessage(' + data + ',' + JSON.stringify(SETTINGS.parentOrigin) + ');' +
+    '</script><p>' + (ok ? '填寫完成' : '填寫失敗') + '</p></body></html>'
+  );
 }
