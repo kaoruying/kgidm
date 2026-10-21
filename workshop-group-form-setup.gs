@@ -97,7 +97,7 @@ function respond_(token,ok,message) {
     .replace(/</g,'\\u003c');
   return HtmlService.createHtmlOutput(
     '<!doctype html><html><body><script>' +
-    'window.parent.postMessage(' + data + ',' + JSON.stringify(SETTINGS.parentOrigin) + ');' +
+    'window.top.postMessage(' + data + ',' + JSON.stringify(SETTINGS.parentOrigin) + ');' +
     '</script><p>' + (ok ? '填寫完成' : '填寫失敗') + '</p></body></html>'
   );
 }
