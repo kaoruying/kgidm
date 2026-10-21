@@ -28,8 +28,9 @@ h2{font-size:18px;margin:0 0 13px}.hint{font-size:14px;line-height:1.75;color:#5
 .field{display:block;font-size:14px;font-weight:750}
 .field input{width:100%;margin-top:8px;border:1px solid #c9d6e6;border-radius:9px;padding:12px;font-size:16px;font-family:inherit;color:#15385e}
 .field input:focus{outline:2px solid #9cbee9}
-#participant{width:100%;margin-top:9px;border:1px solid #c9d6e6;border-radius:9px;padding:13px 12px;background:#fff;font-size:16px;font-family:inherit;color:#15385e;max-width:100%;min-width:0}
-#participant:focus{outline:2px solid #9cbee9}
+#region,#participant{width:100%;margin-top:9px;border:1px solid #c9d6e6;border-radius:9px;padding:13px 12px;background:#fff;font-size:16px;font-family:inherit;color:#15385e;max-width:100%;min-width:0}
+#region:focus,#participant:focus{outline:2px solid #9cbee9}
+.identity-field{margin-bottom:18px}.identity-note{font-size:13px;color:#6c7e92;margin:7px 0 0}#participant:disabled{background:#f4f6f8;color:#8a9db2}
 .notice{font-size:13px;line-height:1.75;background:#fff7e9;border-left:3px solid #cfa158;padding:12px 14px;border-radius:5px;margin-top:18px}
 .submit{display:block;width:100%;margin-top:20px;padding:14px;background:#cfa053;border:0;color:#142e50;font-size:16px;font-weight:800;border-radius:10px;cursor:pointer}
 .submit:disabled{opacity:.52;cursor:default}
@@ -46,8 +47,11 @@ h2{font-size:18px;margin:0 0 13px}.hint{font-size:14px;line-height:1.75;color:#5
 </section>
 <form id="ranking-form" method="POST" target="submit-frame" action="https://script.google.com/macros/s/AKfycbzTQvqXxxbfxyFm9Q4oPf4-YzhEjdMDdfXD30cQdwrwMmyESQM_WiXHszairnmXm8Drfw/exec">
 <section class="panel"><h2>基本資料</h2>
-<label class="field" for="participant">處經理</label>
-<select id="participant" required aria-required="true"><option value="">請選擇您的姓名</option></select>
+<div class="identity-field"><label class="field" for="region">區域中心</label>
+<select id="region" required aria-required="true"><option value="">請選擇區域中心</option></select></div>
+<div class="identity-field"><label class="field" for="participant">單位＋姓名</label>
+<select id="participant" required aria-required="true" disabled><option value="">請先選擇區域中心</option></select>
+<p class="identity-note">選擇區域中心後，這裡只會顯示該區的單位與姓名。</p></div>
 <input type="hidden" name="unit" id="selected-unit">
 <input type="hidden" name="name" id="selected-name">
 <div class="notice">每組限9人；如優先順位額滿，將依後續順位安排。實際分組由主辦單位統籌決定。</div>
@@ -68,12 +72,33 @@ const themes=[
  {name:'自律領導與團隊自主',desc:'聚焦以身作則、責任承擔與夥伴自主行動。'}
 ];
 const participants=[["北一","台北一區","金彥","鄧睿宸"],["北一","台北一區","鴻海","林錦鴻"],["北一","台北二區","非凡","曾淑珍"],["北一","台北二區","創建","譚淑鋆"],["北一","台北二區","毅品","張雅如"],["北一","台北二區","越鋒","林采娥"],["北二","台北三區","駿廷","程廷鈞"],["北二","台北三區","昊陽","林浩筠"],["北二","台北三區","众山","呂敏淑"],["北二","台北三區","駿鋮","林宥成"],["北二","台北四區","東山","曾孝媛"],["北二","台北四區","展毓","嚴毓棟"],["北二","台北四區","崧峰","張啓峯"],["北二","台北四區","雙贏","許凱婷"],["桃竹","桃園區","金峰","呂秋蓉"],["桃竹","桃園區","虹燁","許雅虹"],["桃竹","桃園區","躍昇","許又臻"],["桃竹","桃園區","皇城","孫國城"],["桃竹","桃園區","瑞峰","蕭莉婷"],["桃竹","桃園區","瑞至","黃欣至"],["桃竹","新竹區","亞威","周淑娥"],["桃竹","新竹區","新竹直轄","沈秋吟"],["中嘉","台中一區","嘉銓","楊嘉麗"],["中嘉","台中一區","禾順","陳尹婷"],["中嘉","台中一區","福鵬直轄","黃傑揚"],["中嘉","台中二區","菁業","陳菁亮"],["中嘉","嘉義區","保富","呂敏忠"],["中嘉","嘉義區","上慶","邱慧娟"],["台南","台南一區","金美","樊光美"],["台南","台南一區","立捷","蘇雅俐"],["台南","台南一區","金達","洪淑娟"],["台南","台南二區","松慶","廖樹松"],["高屏","高屏一區","韋誠","沈鳳英"],["高屏","高屏一區","順誠","張婄吟"],["高屏","高屏二區","宏慶","陳澤坤"],["高屏","高屏二區","彩榮","梁麗琴"]];
+const regionSelect=document.getElementById('region');
 const participantSelect=document.getElementById('participant');
-participants.forEach((person,i)=>{
+[...new Set(participants.map(p=>p[0]))].forEach(region=>{
  const option=document.createElement('option');
- option.value=String(i);
- option.textContent=person.join('｜');
- participantSelect.appendChild(option);
+ option.value=region;option.textContent=region;
+ regionSelect.appendChild(option);
+});
+function clearSelectedParticipant(){
+ document.getElementById('selected-unit').value='';
+ document.getElementById('selected-name').value='';
+}
+regionSelect.addEventListener('change',()=>{
+ participantSelect.replaceChildren();
+ const placeholder=document.createElement('option');
+ placeholder.value='';
+ placeholder.textContent=regionSelect.value?'請選擇單位＋姓名':'請先選擇區域中心';
+ participantSelect.appendChild(placeholder);
+ clearSelectedParticipant();
+ participantSelect.disabled=!regionSelect.value;
+ if(!regionSelect.value)return;
+ participants.forEach((person,i)=>{
+  if(person[0]!==regionSelect.value)return;
+  const option=document.createElement('option');
+  option.value=String(i);
+  option.textContent=person[2]+'｜'+person[3];
+  participantSelect.appendChild(option);
+ });
 });
 participantSelect.addEventListener('change',()=>{
  const p=participantSelect.value===''?null:participants[Number(participantSelect.value)];
@@ -115,7 +140,7 @@ function syncRankings(){
 syncRankings();
 const form=document.getElementById('ranking-form'),send=document.getElementById('send');let pending='';
 form.addEventListener('submit',e=>{
- if(!participantSelect.value){e.preventDefault();feedback.textContent='請先選擇您的姓名。';feedback.className='feedback error';return;}
+ if(!regionSelect.value||!participantSelect.value){e.preventDefault();feedback.textContent='請先選擇區域中心與單位＋姓名。';feedback.className='feedback error';return;}
  if(selects.some(r=>!r.select.value)||new Set(selects.map(r=>r.select.value)).size!==4){e.preventDefault();feedback.textContent='請完整選擇第 1 至第 4 順位，四個主題不可重複。';feedback.className='feedback error';rankList.scrollIntoView({behavior:'smooth',block:'start'});return;}
  if(pending){e.preventDefault();return;}
  pending=Date.now()+'-'+Math.random().toString(36).slice(2);
