@@ -15,12 +15,13 @@ body{margin:0;background:#f4f6fa;color:#173150;font-family:"Noto Sans TC","PingF
 h2{font-size:20px;margin:0 0 13px}
 .hint{font-size:15px;line-height:1.75;color:#51647b;margin:0 0 17px}
 .sort-list{display:flex;flex-direction:column;gap:12px}
-.sort-card{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:96px;padding:12px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:pan-y;cursor:grab;position:relative}
+.sort-card{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:96px;padding:12px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:none;cursor:grab;position:relative}
 .sort-card[data-theme="0"]{--tone-bg:#ecf5fc;--tone-border:#c4deef;--tone-accent:#367ca4}
 .sort-card[data-theme="1"]{--tone-bg:#fff5e7;--tone-border:#efd8b3;--tone-accent:#b17d2f}
 .sort-card[data-theme="2"]{--tone-bg:#edf7f2;--tone-border:#c7e3d4;--tone-accent:#407c64}
 .sort-card[data-theme="3"]{--tone-bg:#f3f0f9;--tone-border:#dcd2ee;--tone-accent:#75649e}
-.sort-card.dragging{cursor:grabbing;opacity:1;z-index:50;transform:translateY(-4px) scale(1.025);box-shadow:0 22px 40px rgba(24,55,87,.26),0 8px 16px rgba(24,55,87,.13);outline:2px solid var(--tone-accent);filter:saturate(1.07) brightness(1.02);transition:transform .13s ease,box-shadow .13s ease}
+.sort-card.dragging{opacity:.35;box-shadow:none;transform:none;outline:2px dashed var(--tone-accent)}
+.sort-card.floating{position:fixed!important;z-index:9999;pointer-events:none;touch-action:none;cursor:grabbing;opacity:1!important;transform:translateY(-5px) scale(1.025);box-shadow:0 23px 44px rgba(24,55,87,.28),0 8px 16px rgba(24,55,87,.14);outline:2px solid var(--tone-accent);filter:saturate(1.07);margin:0!important}
 body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
 .sort-card,.sort-card *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
 .sort-card.dragging .sort-rank{box-shadow:0 6px 14px rgba(0,0,0,.15)}
@@ -32,7 +33,7 @@ body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
 .sort-text{min-width:0}
 .sort-name{font-size:18px;font-weight:850;line-height:1.4;margin:0 0 4px}
 .sort-desc{font-size:13px;color:#50637a;line-height:1.5;margin:0}
-.drag-icon{display:flex;align-items:center;justify-content:center;width:44px;min-height:68px;border:1px solid var(--tone-border);border-radius:10px;background:#ffffffbb;font-size:24px;line-height:1;color:var(--tone-accent);text-align:center;font-weight:800;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.drag-icon{display:none;align-items:center;justify-content:center;width:44px;min-height:68px;border:1px solid var(--tone-border);border-radius:10px;background:#ffffffbb;font-size:24px;line-height:1;color:var(--tone-accent);text-align:center;font-weight:800;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .sort-arrows{display:flex;gap:8px;justify-content:flex-end;margin-top:7px}
 .sort-arrows button{background:#edf2f8;color:#183c66;border:0;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:750;cursor:pointer;touch-action:manipulation}
 .sort-arrows button:disabled{opacity:.35}
@@ -58,9 +59,10 @@ body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
 <section class="hero"><div class="eyebrow">10/30 WORKSHOP</div><h1>工作坊分組志願調查</h1><p>工作坊仍以七週策略執行成果分享為主。請依最希望強化的經營主題，排出第一至第四順位。</p></section>
 <section class="panel">
 <h2>分組四大經營主題</h2>
-<p class="hint"><strong>長按整張彩色卡片約半秒</strong>，即可上下拖動排序；平常滑動頁面不會改變順位。左側大數字就是目前的志願順位。</p>
+<p class="hint">10/30 工作坊仍以七週策略執行成果分享為核心。為讓每位處經理獲得更符合通訊處經營需求的實務回饋，本次依四大經營主題分組。請依您最希望強化的能力，將主題由上至下排出第一至第四志願；每組限9人，主辦單位將參考志願順位安排。</p>
+<p class="hint" style="font-weight:750;color:#173b69">直接拖動彩色主題卡片，即可調整順位。</p>
 <div id="sort-list" class="sort-list" aria-label="工作坊四大主題志願順序"></div>
-<p class="sort-status" id="sort-status" aria-live="polite">目前由上到下依序為第 1 至第 4 順位。</p>
+<p class="sort-status" id="sort-status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">順位可調整。</p>
 </section>
 <form id="ranking-form" method="POST" target="submit-frame" action="https://script.google.com/macros/s/AKfycbxErF9nNZQ32wb0Eyjv2Rl7p8ZFVf6pVXP3kO0PLuPeVnla7tkaT3uNGUXeyrDoOGlb/exec">
 <section class="panel"><h2>基本資料</h2>
@@ -166,23 +168,12 @@ sortList.addEventListener('click',e=>{
  if(b.classList.contains('down')&&i<all.length-1)sortList.insertBefore(all[i+1],card);
  updateRanks();
 });
-// 手機：長按整張卡片才排序；短觸與一般上下滑動仍由瀏覽器處理。
+// 立即拖曳，使用浮動複製卡片提供清楚的抓取回饋。
 let drag=null;
-let press=null;
 let autoScrollFrame=0;
-function startCardDrag(card,y){
- if(drag)return;
- drag={card,clientY:y};
- card.classList.add('dragging');
- document.body.classList.add('is-sorting');
- window.getSelection()?.removeAllRanges();
- status.textContent='拖動卡片即可調整 1～4 順位';
- autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
-}
-function moveDraggedCard(y){
+function findTarget(y) {
  if(!drag)return;
- const list=cards();
- const other=list.find(card=>{
+ const other=cards().find(card=>{
   if(card===drag.card)return false;
   const rect=card.getBoundingClientRect();
   return y>=rect.top&&y<=rect.bottom;
@@ -190,79 +181,71 @@ function moveDraggedCard(y){
  if(!other)return;
  const rect=other.getBoundingClientRect();
  const before=y>rect.top+rect.height/2?other.nextSibling:other;
- if(before===drag.card)return;
- sortList.insertBefore(drag.card,before);
- updateRanks();
+ if(before!==drag.card) {
+  sortList.insertBefore(drag.card,before);
+  updateRanks();
+ }
 }
-function scrollWhileDragging(){
+function positionGhost(y) {
  if(!drag)return;
- const edge=100,y=drag.clientY;
- let step=0;
- if(y<edge)step=-Math.min(16,Math.max(3,(edge-y)/5));
- else if(y>window.innerHeight-edge)step=Math.min(16,Math.max(3,(y-window.innerHeight+edge)/5));
- if(step){window.scrollBy(0,step);moveDraggedCard(y);}
+ drag.y=y;
+ drag.ghost.style.top=(y-drag.offsetY)+'px';
+ findTarget(y);
+}
+function scrollWhileDragging() {
+ if(!drag)return;
+ const margin=85;
+ let amount=0;
+ if(drag.y<margin)amount=-Math.min(18,Math.max(3,(margin-drag.y)/4));
+ else if(drag.y>window.innerHeight-margin)amount=Math.min(18,Math.max(3,(drag.y-window.innerHeight+margin)/4));
+ if(amount){window.scrollBy(0,amount);findTarget(drag.y);}
  autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
 }
-function finishCardDrag(){
- if(!drag)return;
+function startCardDrag(card,e) {
+ if(drag)return;
+ const rect=card.getBoundingClientRect();
+ const ghost=card.cloneNode(true);
+ ghost.classList.add('floating');
+ ghost.style.left=rect.left+'px';
+ ghost.style.top=rect.top+'px';
+ ghost.style.width=rect.width+'px';
+ ghost.style.height=rect.height+'px';
+ document.body.appendChild(ghost);
+ drag={card,ghost,pointerId:e.pointerId,offsetY:e.clientY-rect.top,y:e.clientY};
+ card.classList.add('dragging');
+ document.body.classList.add('is-sorting');
+ window.getSelection()?.removeAllRanges();
+ sortList.setPointerCapture(e.pointerId);
+ autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
+}
+function finishCardDrag(e) {
+ if(!drag||e.pointerId!==drag.pointerId)return;
+ cancelAnimationFrame(autoScrollFrame);
+ drag.ghost.remove();
  drag.card.classList.remove('dragging');
  document.body.classList.remove('is-sorting');
  drag=null;
- cancelAnimationFrame(autoScrollFrame);
  updateRanks();
 }
-function clearPress(){
- if(press&&press.timer)clearTimeout(press.timer);
- press=null;
-}
-// 阻止 iOS 長按選取、複製文字與選取範圍；僅限主題卡片，不影響其他表單欄位。
 sortList.addEventListener('contextmenu',e=>{if(e.target.closest('.sort-card'))e.preventDefault();});
 sortList.addEventListener('selectstart',e=>{if(e.target.closest('.sort-card'))e.preventDefault();});
-sortList.addEventListener('touchstart',e=>{
- if(e.target.closest('button')||e.touches.length!==1)return;
+sortList.addEventListener('pointerdown',e=>{
+ if(e.button!==0||e.target.closest('button'))return;
  const card=e.target.closest('.sort-card');
  if(!card)return;
- clearPress();
- const touch=e.touches[0];
- const state={card,x:touch.clientX,y:touch.clientY,timer:null};
- state.timer=setTimeout(()=>{
-  if(press!==state)return;
-  startCardDrag(card,state.y);
-  if(navigator.vibrate)navigator.vibrate(15);
- },330);
- press=state;
-},{passive:true});
-sortList.addEventListener('touchmove',e=>{
- if(!press&&!drag)return;
- if(e.touches.length!==1){clearPress();finishCardDrag();return;}
- const touch=e.touches[0];
- if(drag){
-  // 長按進入排序模式後，阻止網頁原生捲動。
-  if(e.cancelable)e.preventDefault();
-  drag.clientY=touch.clientY;
-  moveDraggedCard(touch.clientY);
- }else if(press&&Math.hypot(touch.clientX-press.x,touch.clientY-press.y)>9){
-  // 使用者正在正常滑頁：取消長按，不更動順位。
-  clearPress();
- }
-},{passive:false});
-sortList.addEventListener('touchend',()=>{clearPress();finishCardDrag();});
-sortList.addEventListener('touchcancel',()=>{clearPress();finishCardDrag();});
-// 電腦滑鼠：按住任何非按鈕的卡片區域即可移動。
-sortList.addEventListener('pointerdown',e=>{
- if(e.pointerType==='touch'||e.button!==0||e.target.closest('button'))return;
- const card=e.target.closest('.sort-card');if(!card)return;
  e.preventDefault();
- startCardDrag(card,e.clientY);
- sortList.setPointerCapture(e.pointerId);
+ startCardDrag(card,e);
 });
 sortList.addEventListener('pointermove',e=>{
- if(e.pointerType==='touch'||!drag)return;
- drag.clientY=e.clientY;
- moveDraggedCard(e.clientY);
+ if(!drag||e.pointerId!==drag.pointerId)return;
+ e.preventDefault();
+ positionGhost(e.clientY);
 });
-sortList.addEventListener('pointerup',e=>{if(e.pointerType!=='touch')finishCardDrag();});
-sortList.addEventListener('pointercancel',e=>{if(e.pointerType!=='touch')finishCardDrag();});
+sortList.addEventListener('pointerup',finishCardDrag);
+sortList.addEventListener('pointercancel',finishCardDrag);
+sortList.addEventListener('lostpointercapture',e=>{
+ if(drag&&e.pointerId===drag.pointerId)finishCardDrag(e);
+});
 updateRanks();
 const form=document.getElementById('ranking-form'),send=document.getElementById('send');let pending='';
 let receiptInterval=null;
