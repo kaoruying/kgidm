@@ -15,22 +15,22 @@ body{margin:0;background:#f4f6fa;color:#173150;font-family:"Noto Sans TC","PingF
 h2{font-size:20px;margin:0 0 13px}
 .hint{font-size:15px;line-height:1.75;color:#51647b;margin:0 0 17px}
 .sort-list{display:flex;flex-direction:column;gap:12px}
-.sort-card{display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:117px;padding:16px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;position:relative}
+.sort-card{display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:96px;padding:12px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:pan-y;cursor:default;position:relative}
 .sort-card[data-theme="0"]{--tone-bg:#ecf5fc;--tone-border:#c4deef;--tone-accent:#367ca4}
 .sort-card[data-theme="1"]{--tone-bg:#fff5e7;--tone-border:#efd8b3;--tone-accent:#b17d2f}
 .sort-card[data-theme="2"]{--tone-bg:#edf7f2;--tone-border:#c7e3d4;--tone-accent:#407c64}
 .sort-card[data-theme="3"]{--tone-bg:#f3f0f9;--tone-border:#dcd2ee;--tone-accent:#75649e}
-.sort-card.dragging{cursor:grabbing;opacity:.85;z-index:5;box-shadow:0 12px 28px #18375738;transition:none}
+.sort-card.dragging{opacity:.82;z-index:5;box-shadow:0 9px 22px #18375738;outline:2px solid var(--tone-accent);transition:none}
 .sort-card.drop-target{outline:3px dashed var(--tone-accent);outline-offset:2px}
-.sort-rank{border-radius:12px;background:var(--tone-accent);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px;min-height:79px}
-.sort-rank strong{font-size:51px;line-height:1;font-weight:900;font-variant-numeric:tabular-nums}
+.sort-rank{border-radius:12px;background:var(--tone-accent);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px;min-height:66px}
+.sort-rank strong{font-size:45px;line-height:1;font-weight:900;font-variant-numeric:tabular-nums}
 .sort-rank span{font-size:12px;font-weight:800;margin-top:5px}
 .sort-text{min-width:0}
-.sort-name{font-size:19px;font-weight:850;line-height:1.45;margin:0 0 6px}
-.sort-desc{font-size:14px;color:#50637a;line-height:1.65;margin:0}
-.drag-icon{font-size:26px;line-height:1;color:var(--tone-accent);text-align:center;font-weight:700}
-.sort-arrows{display:flex;gap:9px;justify-content:flex-end;margin-top:14px}
-.sort-arrows button{background:#edf2f8;color:#183c66;border:0;border-radius:8px;padding:8px 11px;font-size:15px;font-weight:750;cursor:pointer;touch-action:manipulation}
+.sort-name{font-size:18px;font-weight:850;line-height:1.4;margin:0 0 4px}
+.sort-desc{font-size:13px;color:#50637a;line-height:1.5;margin:0}
+.drag-icon{display:flex;align-items:center;justify-content:center;width:44px;min-height:68px;border:1px solid var(--tone-border);border-radius:10px;background:#ffffffbb;font-size:24px;line-height:1;color:var(--tone-accent);text-align:center;font-weight:800;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.sort-arrows{display:flex;gap:8px;justify-content:flex-end;margin-top:7px}
+.sort-arrows button{background:#edf2f8;color:#183c66;border:0;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:750;cursor:pointer;touch-action:manipulation}
 .sort-arrows button:disabled{opacity:.35}
 .sort-status{font-size:14px;font-weight:700;margin-top:13px;color:#37628c}
 .field{display:block;font-size:16px;font-weight:800}
@@ -44,9 +44,9 @@ h2{font-size:20px;margin:0 0 13px}
 .footer{text-align:center;color:#78879b;font-size:12px;margin-top:20px}
 @media(max-width:550px){
 .shell{padding:22px 14px 55px}.hero{padding:24px 20px}.panel{padding:21px 14px}
-.sort-card{grid-template-columns:63px minmax(0,1fr) 23px;padding:12px 10px;gap:10px;min-height:120px}
-.sort-rank{min-height:75px}.sort-rank strong{font-size:47px}
-.sort-name{font-size:17px}.sort-desc{font-size:14px}.drag-icon{font-size:21px}
+.sort-card{grid-template-columns:59px minmax(0,1fr) 44px;padding:9px;gap:9px;min-height:92px}
+.sort-rank{min-height:63px}.sort-rank strong{font-size:43px}
+.sort-name{font-size:17px}.sort-desc{font-size:12px;line-height:1.45}.drag-icon{font-size:23px;min-height:60px}
 }
 </style></head><body>
 <main class="shell">
@@ -54,7 +54,7 @@ h2{font-size:20px;margin:0 0 13px}
 <section class="hero"><div class="eyebrow">10/30 WORKSHOP</div><h1>工作坊分組志願調查</h1><p>工作坊仍以七週策略執行成果分享為主。請依最希望強化的經營主題，排出第一至第四順位。</p></section>
 <section class="panel">
 <h2>分組四大經營主題</h2>
-<p class="hint">請<strong>按住主題卡片，上下拖動</strong>調整志願順序。最上方為<strong>第 1 順位</strong>，卡片左側數字會跟著改變。</p>
+<p class="hint">請按住卡片<strong>右側的 ☰ 把手</strong>上下拖動，或按「上移／下移」。左側數字即為志願順位，其他位置可正常滑動頁面。</p>
 <div id="sort-list" class="sort-list" aria-label="工作坊四大主題志願順序"></div>
 <p class="sort-status" id="sort-status" aria-live="polite">目前由上到下依序為第 1 至第 4 順位。</p>
 </section>
@@ -148,7 +148,7 @@ themes.forEach((theme,i)=>{
  const title=document.createElement('h3');title.className='sort-name';title.textContent=theme.name;
  const desc=document.createElement('p');desc.className='sort-desc';desc.textContent=theme.desc;
  content.append(title,desc);
- const handle=document.createElement('span');handle.className='drag-icon';handle.textContent='☰';handle.setAttribute('aria-hidden','true');
+ const handle=document.createElement('div');handle.className='drag-icon';handle.textContent='☰';handle.setAttribute('role','img');handle.setAttribute('aria-label','按住這裡拖動排序');
  const arrows=document.createElement('div');arrows.className='sort-arrows';
  const up=document.createElement('button');up.type='button';up.className='up';up.textContent='↑ 上移';up.setAttribute('aria-label',theme.name+'往上移');
  const down=document.createElement('button');down.type='button';down.className='down';down.textContent='↓ 下移';down.setAttribute('aria-label',theme.name+'往下移');
@@ -162,44 +162,69 @@ sortList.addEventListener('click',e=>{
  if(b.classList.contains('down')&&i<all.length-1)sortList.insertBefore(all[i+1],card);
  updateRanks();
 });
+// 只有拖曳把手會啟動排序，避免手機滑頁及選擇姓名時誤觸。
 let drag=null;
+let autoScrollFrame=0;
+function moveDraggedCard(y){
+ if(!drag)return;
+ const other=cards().find(card=>card!==drag.card&&(()=>{
+  const rect=card.getBoundingClientRect();
+  return y>=rect.top&&y<=rect.bottom;
+ })());
+ if(other){
+  const rect=other.getBoundingClientRect();
+  const after=y>rect.top+rect.height/2;
+  const before=after?other.nextSibling:other;
+  if(before!==drag.card){
+   sortList.insertBefore(drag.card,before);
+   updateRanks();
+  }
+ }
+}
+function scrollWhileDragging(){
+ if(!drag)return;
+ const edge=92;
+ const y=drag.clientY;
+ let step=0;
+ if(y<edge)step=-Math.min(17,Math.max(3,(edge-y)/5));
+ else if(y>window.innerHeight-edge)step=Math.min(17,Math.max(3,(y-(window.innerHeight-edge))/5));
+ if(step){
+  window.scrollBy(0,step);
+  moveDraggedCard(y);
+ }
+ autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
+}
 sortList.addEventListener('pointerdown',e=>{
- if(e.target.closest('button')||e.button!==0)return;
- const card=e.target.closest('.sort-card');if(!card)return;
+ const handle=e.target.closest('.drag-icon');
+ if(!handle||e.button!==0)return;
+ const card=handle.closest('.sort-card');
+ if(!card)return;
  e.preventDefault();
- drag={card,pointerId:e.pointerId,startY:e.clientY,y:e.clientY,target:null,after:false};
+ drag={card,pointerId:e.pointerId,clientY:e.clientY};
  card.classList.add('dragging');
- card.setPointerCapture(e.pointerId);
+ sortList.setPointerCapture(e.pointerId);
+ autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
 });
 sortList.addEventListener('pointermove',e=>{
  if(!drag||e.pointerId!==drag.pointerId)return;
- e.preventDefault();drag.y=e.clientY;
- const dy=Math.max(-200,Math.min(200,e.clientY-drag.startY));
- drag.card.style.transform='translateY('+dy+'px)';
- let target=null,after=false,min=Infinity;
- for(const candidate of cards()){
-  if(candidate===drag.card)continue;
-  const rect=candidate.getBoundingClientRect();
-  const distance=Math.abs(e.clientY-(rect.top+rect.height/2));
-  if(distance<min){min=distance;target=candidate;after=e.clientY>rect.top+rect.height/2;}
- }
- cards().forEach(c=>c.classList.remove('drop-target'));
- if(target)target.classList.add('drop-target');
- drag.target=target;drag.after=after;
+ e.preventDefault();
+ drag.clientY=e.clientY;
+ moveDraggedCard(e.clientY);
 });
-function finishDrag(e,apply){
+function finishDrag(e){
  if(!drag||e.pointerId!==drag.pointerId)return;
- const state=drag;drag=null;
- state.card.style.transform='';
- state.card.classList.remove('dragging');
- cards().forEach(c=>c.classList.remove('drop-target'));
- if(apply&&Math.abs(e.clientY-state.startY)>14&&state.target){
-  sortList.insertBefore(state.card,state.after?state.target.nextSibling:state.target);
-  updateRanks();
- }
+ drag.card.classList.remove('dragging');
+ drag=null;
+ cancelAnimationFrame(autoScrollFrame);
+ updateRanks();
 }
-sortList.addEventListener('pointerup',e=>finishDrag(e,true));
-sortList.addEventListener('pointercancel',e=>finishDrag(e,false));
+sortList.addEventListener('pointerup',finishDrag);
+sortList.addEventListener('pointercancel',finishDrag);
+sortList.addEventListener('lostpointercapture',()=>{
+ if(!drag)return;
+ drag.card.classList.remove('dragging');
+ drag=null;cancelAnimationFrame(autoScrollFrame);updateRanks();
+});
 updateRanks();
 const form=document.getElementById('ranking-form'),send=document.getElementById('send');let pending='';
 form.addEventListener('submit',e=>{
