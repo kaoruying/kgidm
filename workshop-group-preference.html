@@ -15,12 +15,16 @@ body{margin:0;background:#f4f6fa;color:#173150;font-family:"Noto Sans TC","PingF
 h2{font-size:20px;margin:0 0 13px}
 .hint{font-size:15px;line-height:1.75;color:#51647b;margin:0 0 17px}
 .sort-list{display:flex;flex-direction:column;gap:12px}
-.sort-card{display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:96px;padding:12px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:pan-y;cursor:grab;position:relative}
+.sort-card{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:96px;padding:12px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:pan-y;cursor:grab;position:relative}
 .sort-card[data-theme="0"]{--tone-bg:#ecf5fc;--tone-border:#c4deef;--tone-accent:#367ca4}
 .sort-card[data-theme="1"]{--tone-bg:#fff5e7;--tone-border:#efd8b3;--tone-accent:#b17d2f}
 .sort-card[data-theme="2"]{--tone-bg:#edf7f2;--tone-border:#c7e3d4;--tone-accent:#407c64}
 .sort-card[data-theme="3"]{--tone-bg:#f3f0f9;--tone-border:#dcd2ee;--tone-accent:#75649e}
-.sort-card.dragging{cursor:grabbing;opacity:.82;z-index:5;box-shadow:0 9px 22px #18375738;outline:2px solid var(--tone-accent);transition:none}
+.sort-card.dragging{cursor:grabbing;opacity:1;z-index:50;transform:translateY(-4px) scale(1.025);box-shadow:0 22px 40px rgba(24,55,87,.26),0 8px 16px rgba(24,55,87,.13);outline:2px solid var(--tone-accent);filter:saturate(1.07) brightness(1.02);transition:transform .13s ease,box-shadow .13s ease}
+body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
+.sort-card,.sort-card *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+.sort-card.dragging .sort-rank{box-shadow:0 6px 14px rgba(0,0,0,.15)}
+.sort-card.dragging .drag-icon{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.13)}
 .sort-card.drop-target{outline:3px dashed var(--tone-accent);outline-offset:2px}
 .sort-rank{border-radius:12px;background:var(--tone-accent);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px;min-height:66px}
 .sort-rank strong{font-size:45px;line-height:1;font-weight:900;font-variant-numeric:tabular-nums}
@@ -170,6 +174,8 @@ function startCardDrag(card,y){
  if(drag)return;
  drag={card,clientY:y};
  card.classList.add('dragging');
+ document.body.classList.add('is-sorting');
+ window.getSelection()?.removeAllRanges();
  status.textContent='拖動卡片即可調整 1～4 順位';
  autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
 }
@@ -200,6 +206,7 @@ function scrollWhileDragging(){
 function finishCardDrag(){
  if(!drag)return;
  drag.card.classList.remove('dragging');
+ document.body.classList.remove('is-sorting');
  drag=null;
  cancelAnimationFrame(autoScrollFrame);
  updateRanks();
@@ -208,6 +215,9 @@ function clearPress(){
  if(press&&press.timer)clearTimeout(press.timer);
  press=null;
 }
+// 阻止 iOS 長按選取、複製文字與選取範圍；僅限主題卡片，不影響其他表單欄位。
+sortList.addEventListener('contextmenu',e=>{if(e.target.closest('.sort-card'))e.preventDefault();});
+sortList.addEventListener('selectstart',e=>{if(e.target.closest('.sort-card'))e.preventDefault();});
 sortList.addEventListener('touchstart',e=>{
  if(e.target.closest('button')||e.touches.length!==1)return;
  const card=e.target.closest('.sort-card');
