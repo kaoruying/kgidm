@@ -24,17 +24,9 @@ const WORKSHOP = {
   ],
   rankings: ['第一順位', '第二順位', '第三順位', '第四順位'],
   description:
-    '本次工作坊仍以七週「策略展開與週追蹤表」的實際執行成果為分享主軸。學員不需因分組調整原有案例。\n\n' +
-    '為提供更貼近通訊處經營需求的實務回饋，請依您目前最希望強化的能力，將四大主題排出第一至第四順位。' +
-    '四個主題皆須排序，每個順位與主題只能使用一次。\n\n' +
-    '【分組安排說明】\n' +
-    '1. 36位學員分為四組，每組以9人為限。\n' +
-    '2. 主辦單位將依學員志願排序及各組名額統籌安排。\n' +
-    '3. 如較高順位的組別額滿，將依後續順位安排。\n' +
-    '4. 填寫本問卷不代表已確定分組，實際分組以主辦單位公告為準。\n' +
-    '5. 主辦單位保留分組調整及最終決定權。',
-  agreement:
-    '我已了解每組以9人為限，分組將參考志願順位及名額，並以主辦單位最終安排為準。'
+    '請依目前最希望強化的經營主題，填寫第一至第四順位，每個主題及順位不可重複。\\n' +
+    '工作坊仍以七週策略執行成果分享為主，依分組主題提供不同角度的實務回饋。\\n\\n' +
+    '每組限9人；如優先順位額滿，將依後續順位安排。實際分組由主辦單位統籌決定。'
 };
 
 function getOrAddItem_(form, type, title) {
@@ -61,18 +53,14 @@ function configureWorkshopForm_(form) {
   const grid = getOrAddItem_(form, FormApp.ItemType.GRID,
     '四大主題志願排序（每個順位及主題都只能使用一次）').asGridItem();
   grid.setTitle('四大主題志願排序（每個順位及主題都只能使用一次）')
-    .setHelpText('每列選擇一個順位。請在 Google 表單編輯頁開啟「每欄僅限一個回覆」，確保四個順位不重複。')
+    .setHelpText('每項主題請選擇不同順位。')
     .setRows(WORKSHOP.topics).setColumns(WORKSHOP.rankings).setRequired(true);
 
-  getOrAddItem_(form, FormApp.ItemType.PARAGRAPH_TEXT,
-    '您最希望透過工作坊獲得哪一項經營協助？（選填）')
-    .asParagraphTextItem()
-    .setTitle('您最希望透過工作坊獲得哪一項經營協助？（選填）')
-    .setRequired(false);
+  // 精簡問卷：移除舊版多餘的開放題、同意勾選題。
+  const unnecessaryTitles = ['您最希望透過工作坊獲得哪一項經營協助？（選填）', '分組安排確認'];
+  form.getItems().filter(item => unnecessaryTitles.includes(item.getTitle()))
+    .forEach(item => form.deleteItem(item));
 
-  getOrAddItem_(form, FormApp.ItemType.CHECKBOX, '分組安排確認')
-    .asCheckboxItem().setTitle('分組安排確認')
-    .setChoiceValues([WORKSHOP.agreement]).setRequired(true);
   form.setAcceptingResponses(true);
 }
 
