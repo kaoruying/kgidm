@@ -32,10 +32,11 @@ const WORKSHOP = {
 function getOrAddItem_(form, type, title) {
   const existing = form.getItems(type).find(item => item.getTitle() === title);
   if (existing) return existing;
-  if (type === FormApp.ItemType.TEXT) return form.addTextItem();
-  if (type === FormApp.ItemType.GRID) return form.addGridItem();
-  if (type === FormApp.ItemType.PARAGRAPH_TEXT) return form.addParagraphTextItem();
-  if (type === FormApp.ItemType.CHECKBOX) return form.addCheckboxItem();
+  // 轉回通用 Item，讓呼叫端可安全使用 asTextItem() / asGridItem()。
+  if (type === FormApp.ItemType.TEXT) return form.getItemById(form.addTextItem().getId());
+  if (type === FormApp.ItemType.GRID) return form.getItemById(form.addGridItem().getId());
+  if (type === FormApp.ItemType.PARAGRAPH_TEXT) return form.getItemById(form.addParagraphTextItem().getId());
+  if (type === FormApp.ItemType.CHECKBOX) return form.getItemById(form.addCheckboxItem().getId());
   throw new Error('不支援的題目類型');
 }
 
