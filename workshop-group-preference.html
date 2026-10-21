@@ -1,135 +1,117 @@
 <!doctype html>
-<html lang="zh-Hant"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>企業家經營班｜工作坊分組志願調查</title>
 <style>
-:root{font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;color:#1b3050;background:#f5f7fb}*{box-sizing:border-box}
-body{margin:0}.shell{max-width:790px;margin:0 auto;padding:28px 18px 60px}
-.brand{display:flex;align-items:center;gap:12px;font-weight:700;margin-bottom:20px;color:#16345c}.mark{display:grid;place-items:center;background:#183961;color:#fff;font-size:19px;width:36px;height:36px;border-radius:9px}
-.hero{background:linear-gradient(115deg,#112e55,#275076);border-radius:19px;padding:27px 30px;color:#fff}
-.eyebrow{color:#edba66;font-size:12px;letter-spacing:1px;font-weight:800}.hero h1{font-size:clamp(24px,4vw,32px);margin:10px 0}.hero p{font-size:14px;line-height:1.8;margin:0;color:#e7eff9}
-.panel{background:white;border:1px solid #e1e7f0;border-radius:17px;padding:24px 28px;margin-top:16px}
-h2{font-size:18px;margin:0 0 15px}.info{font-size:13px;line-height:1.8;color:#57677a;margin:0 0 14px}
-.topic-grid{display:grid;grid-template-columns:1fr;gap:10px}.topic-card{display:flex;align-items:center;gap:14px;touch-action:pan-y;user-select:none}.topic-card.dragging{opacity:.55;border-color:#c59c53;background:#fff6e7}.topic-card.over{border-color:#b88a43;box-shadow:0 0 0 2px #dfc18d}.rank-badge{background:#153b68;color:#fff;border-radius:9px;padding:9px 8px;min-width:86px;text-align:center;font-size:12px;font-weight:800}.topic-main{flex:1}.drag-handle{border:0;background:#eef3fa;color:#244b76;border-radius:9px;padding:10px;cursor:grab;font-size:21px;touch-action:none;user-select:none;line-height:1}.move-buttons{display:flex;flex-direction:column;gap:5px}.move-buttons button{background:#eef3fa;color:#244b76;border:0;padding:5px 10px;margin:0;width:auto;border-radius:6px;font-size:13px;cursor:pointer}.move-buttons button:disabled{opacity:.25;cursor:default}.topic-card{padding:16px;border:1px solid #e3e9f1;border-radius:12px;background:#fbfcff}.topic-card h3{font-size:15px;margin:0 0 7px;color:#163a66}.topic-card p{font-size:13px;line-height:1.75;color:#52647b;margin:0}.panel-lead{font-size:13px;line-height:1.85;color:#52647b;margin:0 0 16px}.details{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-size:14px;font-weight:700;display:block}
-input,select{width:100%;background:#fff;margin-top:8px;border:1px solid #c9d4e2;border-radius:9px;padding:13px;font:inherit;font-size:14px;color:#1b3050}
-input:focus,select:focus{outline:2px solid #a3c2f5;border-color:#3975c2}
-.rank{display:grid;grid-template-columns:115px 1fr;align-items:center;gap:15px;margin:13px 0}.rank b{font-size:14px}.rank select{margin:0}
-.notice{background:#fff8eb;border-left:3px solid #d2a259;border-radius:6px;padding:12px 15px;margin-top:19px;font-size:13px;line-height:1.8}
-button{background:#d5a04a;color:#122b4f;border:0;border-radius:10px;width:100%;padding:14px;font-size:16px;font-weight:800;cursor:pointer;margin-top:21px}
-button:disabled{opacity:.45;cursor:wait}.feedback{font-size:14px;line-height:1.7;margin-top:14px}.feedback.good{color:#116d4a}.feedback.error{color:#ac3434}
-.footer{text-align:center;margin-top:19px;font-size:12px;color:#718199}
-/* 卡片控制項不可繼承表單送出按鈕的全寬樣式 */
-.topic-card .drag-handle{width:43px;min-width:43px;min-height:43px;margin:0;padding:9px;flex:0 0 43px}
-.topic-card .move-buttons{flex:0 0 36px}
-.topic-card .move-buttons button{width:36px;min-width:36px;margin:0;padding:7px 0}
-.topic-main{flex:1;min-width:0;overflow-wrap:normal;word-break:normal}
-.topic-card h3,.topic-card p{white-space:normal;word-break:normal}
-.rank-badge{flex:0 0 86px}
-@media(max-width:520px){
- .hero{padding:24px 20px}.panel{padding:21px 18px}.details{grid-template-columns:1fr}
- .topic-card{display:grid;grid-template-columns:minmax(0,1fr) 36px 43px;grid-template-rows:auto auto;gap:10px 8px;align-items:center;padding:15px}
- .topic-card .rank-badge{grid-column:1;grid-row:1;justify-self:start;min-width:86px;max-width:max-content}
- .topic-card .topic-main{grid-column:1 / -1;grid-row:2;min-width:0}
- .topic-card .move-buttons{grid-column:2;grid-row:1}
- .topic-card .drag-handle{grid-column:3;grid-row:1}
- .topic-card h3{font-size:16px;line-height:1.5}
- .topic-card p{font-size:13px;line-height:1.65}
- .rank{grid-template-columns:1fr;gap:7px}
-}
-@media(max-width:350px){.shell{padding-left:12px;padding-right:12px}.panel{padding:18px 14px}.topic-card{padding:12px}}
+*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:#173150;font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+.shell{max-width:790px;margin:auto;padding:25px 18px 60px}
+.brand{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:800;margin-bottom:20px}
+.logo{display:grid;place-items:center;background:#173b65;color:white;width:36px;height:36px;border-radius:9px;font-size:19px}
+.hero{background:linear-gradient(120deg,#12315a,#30577e);color:white;border-radius:20px;padding:27px 29px}
+.eyebrow{font-size:12px;font-weight:750;letter-spacing:1px;color:#eabe70}
+.hero h1{font-size:clamp(24px,4vw,32px);margin:12px 0}
+.hero p{font-size:14px;line-height:1.8;margin:0;color:#f0f4fb}
+.panel{background:white;border:1px solid #dfe6f0;border-radius:17px;padding:24px 27px;margin-top:16px}
+h2{font-size:18px;margin:0 0 13px}.hint{font-size:14px;line-height:1.75;color:#5a6c83;margin:0 0 17px}
+.progress{font-size:13px;font-weight:700;color:#875c22;background:#fff8ec;border-radius:9px;padding:11px 13px;margin-bottom:14px}
+.topic-list{display:grid;gap:10px}
+.topic-choice{display:flex;align-items:center;text-align:left;gap:13px;width:100%;margin:0;padding:17px 16px;border-radius:12px;border:1px solid #dce5f0;background:#fafdff;color:#183859;font:inherit;cursor:pointer;transition:background .15s,border-color .15s;touch-action:manipulation}
+.topic-choice:focus-visible{outline:3px solid #a2bfeb}
+.topic-choice:active{background:#eaf1fa}.topic-choice.chosen{background:#eef5ff;border-color:#99b7dc}
+.topic-copy{flex:1;min-width:0}.topic-title{display:block;font-size:16px;font-weight:800;line-height:1.55}
+.topic-desc{display:block;margin-top:5px;font-size:13px;font-weight:400;line-height:1.65;color:#5f7187}
+.status{flex:0 0 85px;max-width:85px;padding:8px 5px;background:#173d6e;color:white;text-align:center;border-radius:9px;font-size:12px;font-weight:800;white-space:nowrap}
+.status.empty{background:#eaf0f7;color:#446383}
+.actions{display:flex;justify-content:flex-end;margin-top:12px}
+.reset{width:auto;padding:9px 12px;border:none;border-radius:8px;background:#e9edf4;color:#335276;font-size:13px;font-weight:700;cursor:pointer}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:block;font-size:14px;font-weight:750}
+.field input{width:100%;margin-top:8px;border:1px solid #c9d6e6;border-radius:9px;padding:12px;font-size:16px;font-family:inherit;color:#15385e}
+.field input:focus{outline:2px solid #9cbee9}
+.notice{font-size:13px;line-height:1.75;background:#fff7e9;border-left:3px solid #cfa158;padding:12px 14px;border-radius:5px;margin-top:18px}
+.submit{display:block;width:100%;margin-top:20px;padding:14px;background:#cfa053;border:0;color:#142e50;font-size:16px;font-weight:800;border-radius:10px;cursor:pointer}
+.submit:disabled{opacity:.52;cursor:default}
+.feedback{margin-top:13px;font-size:14px;line-height:1.65}.feedback.good{color:#126b4d}.feedback.error{color:#a83232}
+.footer{text-align:center;color:#78879b;font-size:12px;margin-top:20px}
+@media(max-width:550px){.shell{padding:22px 15px 55px}.hero{padding:24px 20px}.panel{padding:21px 17px}.details{grid-template-columns:1fr}.topic-choice{padding:15px 12px;gap:9px}.status{flex-basis:73px;max-width:73px;font-size:11px}.topic-title{font-size:15px}.topic-desc{font-size:12px}}
 </style></head><body>
 <main class="shell">
-<div class="brand"><span class="mark">K</span>凱基人壽｜企業家經營班</div>
-<section class="hero"><div class="eyebrow">10/30 WORKSHOP</div><h1>工作坊分組志願調查</h1>
-<p>工作坊仍以七週策略執行成果分享為主。請依最希望強化的經營主題，填寫第一至第四順位。</p></section>
-<section class="panel" aria-labelledby="topics-title">
-<h2 id="topics-title">四大經營主題</h2>
-<p class="panel-lead">按住右側「≡」拖動卡片，排出第一至第四順位；手機也可拖動。各組仍以七週執行成果為分享核心。</p>
-<div class="topic-grid" id="topic-list">
-<article class="topic-card" data-topic="人才育成與新人定著"><span class="rank-badge"></span><div class="topic-main"><h3>人才育成與新人定著</h3><p>聚焦新人啟專、育成輔導、活動養成與留存機制。</p></div><div class="move-buttons"><button type="button" class="up" aria-label="往上一個順位">↑</button><button type="button" class="down" aria-label="往下一個順位">↓</button></div><button class="drag-handle" type="button" aria-label="按住拖動調整順位">☰</button></article>
-<article class="topic-card" data-topic="願景領導與增員驅動"><span class="rank-badge"></span><div class="topic-main"><h3>願景領導與增員驅動</h3><p>聚焦團隊願景、增員開口量、邀約行動與參與動能。</p></div><div class="move-buttons"><button type="button" class="up" aria-label="往上一個順位">↑</button><button type="button" class="down" aria-label="往下一個順位">↓</button></div><button class="drag-handle" type="button" aria-label="按住拖動調整順位">☰</button></article>
-<article class="topic-card" data-topic="經營複製與組織擴張"><span class="rank-badge"></span><div class="topic-main"><h3>經營複製與組織擴張</h3><p>聚焦主管培育、經營模式複製與組織擴張。</p></div><div class="move-buttons"><button type="button" class="up" aria-label="往上一個順位">↑</button><button type="button" class="down" aria-label="往下一個順位">↓</button></div><button class="drag-handle" type="button" aria-label="按住拖動調整順位">☰</button></article>
-<article class="topic-card" data-topic="自律領導與團隊自主"><span class="rank-badge"></span><div class="topic-main"><h3>自律領導與團隊自主</h3><p>聚焦以身作則、責任承擔與夥伴自主行動。</p></div><div class="move-buttons"><button type="button" class="up" aria-label="往上一個順位">↑</button><button type="button" class="down" aria-label="往下一個順位">↓</button></div><button class="drag-handle" type="button" aria-label="按住拖動調整順位">☰</button></article></div></section>
+<div class="brand"><span class="logo">K</span>凱基人壽｜企業家經營班</div>
+<section class="hero"><div class="eyebrow">10/30 WORKSHOP</div><h1>工作坊分組志願調查</h1><p>工作坊仍以七週策略執行成果分享為主。請依最希望強化的經營主題，排出第一至第四順位。</p></section>
+<section class="panel"><h2>四大經營主題｜點選排序</h2>
+<p class="hint">請依喜好依序點選主題：<strong>第一次點選為第一順位</strong>，第二次為第二順位，以此類推。點選已選的主題可取消，重新安排。</p>
+<div id="progress" class="progress" aria-live="polite">請點選最希望加強的第一順位主題</div>
+<div id="topic-list" class="topic-list"></div>
+<div class="actions"><button type="button" id="reset" class="reset">重新排序</button></div>
+</section>
 <form id="ranking-form" method="POST" target="submit-frame" action="https://script.google.com/macros/s/AKfycbzTQvqXxxbfxyFm9Q4oPf4-YzhEjdMDdfXD30cQdwrwMmyESQM_WiXHszairnmXm8Drfw/exec">
 <section class="panel"><h2>基本資料</h2>
-<div class="details"><label>通訊處<input name="unit" required maxlength="70" placeholder="請輸入通訊處名稱" autocomplete="organization"></label>
-<label>處經理姓名<input name="name" required maxlength="70" placeholder="請輸入姓名" autocomplete="name"></label></div></section>
-<section class="panel"><h2>四大主題志願排序</h2>
-<p class="info">每個主題只能選擇一次，請依想加強的優先順序排列。</p>
-<div id="ranks"></div>
+<div class="details"><label class="field">通訊處<input name="unit" required maxlength="70" placeholder="請輸入通訊處" autocomplete="organization"></label>
+<label class="field">處經理姓名<input name="name" required maxlength="70" placeholder="請輸入姓名" autocomplete="name"></label></div>
 <div class="notice">每組限9人；如優先順位額滿，將依後續順位安排。實際分組由主辦單位統籌決定。</div>
-<input type="hidden" name="token" id="token">
-<button type="submit" id="send">送出分組志願</button>
+<div id="hidden-ranks"></div>
+<input type="hidden" id="token" name="token">
+<button class="submit" id="send" type="submit">確認順位並送出</button>
 <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
 </section></form>
-<iframe name="submit-frame" id="submit-frame" title="背景提交" hidden></iframe>
+<iframe title="背景提交" name="submit-frame" hidden></iframe>
 <div class="footer">凱基人壽｜業務訓練部</div>
 </main>
 <script>
-const holder=document.getElementById('ranks');
-const list=document.getElementById('topic-list');
-for(let i=1;i<=4;i++){
- const input=document.createElement('input');input.type='hidden';input.name='rank'+i;input.id='rank'+i;holder.appendChild(input);
-}
-function cards(){return [...list.querySelectorAll('.topic-card')];}
-function syncRanks(){
- cards().forEach((card,i)=>{
-  card.querySelector('.rank-badge').textContent='第'+['一','二','三','四'][i]+'順位';
-  document.getElementById('rank'+(i+1)).value=card.dataset.topic;
-  card.querySelector('.up').disabled=i===0;
-  card.querySelector('.down').disabled=i===3;
- });
-}
-list.addEventListener('click',e=>{
- const button=e.target.closest('.up,.down');
- if(!button)return;
- const card=button.closest('.topic-card');
- const array=cards(),i=array.indexOf(card);
- if(button.classList.contains('up')&&i>0)list.insertBefore(card,array[i-1]);
- if(button.classList.contains('down')&&i<3)list.insertBefore(array[i+1],card);
- syncRanks();
-});
-let held=null,originY=0,moved=false;
-list.addEventListener('pointerdown',e=>{
- const handle=e.target.closest('.drag-handle');
- if(!handle)return;
- e.preventDefault();
- held=handle.closest('.topic-card');originY=e.clientY;moved=false;
- held.classList.add('dragging');
- handle.setPointerCapture(e.pointerId);
-});
-list.addEventListener('pointermove',e=>{
- if(!held)return;
- e.preventDefault();
- if(Math.abs(e.clientY-originY)>4)moved=true;
- if(!moved)return;
- for(const card of cards())card.classList.remove('over');
- const other=document.elementFromPoint(e.clientX,e.clientY)?.closest('.topic-card');
- if(other&&other!==held&&list.contains(other)){
-  other.classList.add('over');
-  const b=other.getBoundingClientRect();
-  if(e.clientY>b.top+b.height/2)list.insertBefore(held,other.nextSibling);
-  else list.insertBefore(held,other);
-  syncRanks();
+'use strict';
+const themes=[
+ {name:'人才育成與新人定著',desc:'聚焦新人啟專、育成輔導、活動養成與留存機制。'},
+ {name:'願景領導與增員驅動',desc:'聚焦團隊願景、增員開口量、邀約行動與參與動能。'},
+ {name:'經營複製與組織擴張',desc:'聚焦主管培育、經營模式複製與組織擴張。'},
+ {name:'自律領導與團隊自主',desc:'聚焦以身作則、責任承擔與夥伴自主行動。'}
+];
+const order=[];
+const topicList=document.getElementById('topic-list');
+const progress=document.getElementById('progress');
+const feedback=document.getElementById('feedback');
+const names=['第一','第二','第三','第四'];
+function render(){
+ topicList.replaceChildren();
+ const arranged=[...order,...themes.map(t=>t.name).filter(n=>!order.includes(n))];
+ for(const name of arranged){
+  const t=themes.find(x=>x.name===name),rank=order.indexOf(name);
+  const button=document.createElement('button');
+  button.type='button';button.className='topic-choice'+(rank>=0?' chosen':'');
+  button.setAttribute('aria-pressed',rank>=0?'true':'false');
+  const copy=document.createElement('span');copy.className='topic-copy';
+  const title=document.createElement('span');title.className='topic-title';title.textContent=t.name;
+  const desc=document.createElement('span');desc.className='topic-desc';desc.textContent=t.desc;
+  copy.append(title,desc);
+  const badge=document.createElement('span');badge.className='status'+(rank<0?' empty':'');
+  badge.textContent=rank<0?'點選排序':names[rank]+'順位';
+  button.append(copy,badge);
+  button.addEventListener('click',()=>{
+   const n=order.indexOf(name);
+   if(n>=0)order.splice(n,1);
+   else if(order.length<4)order.push(name);
+   feedback.textContent='';render();
+  });
+  topicList.append(button);
  }
-});
-function finishDrag(){if(!held)return;held.classList.remove('dragging');for(const card of cards())card.classList.remove('over');held=null;syncRanks();}
-list.addEventListener('pointerup',finishDrag);
-list.addEventListener('pointercancel',finishDrag);
-syncRanks();
-const form=document.getElementById('ranking-form'),btn=document.getElementById('send'),feed=document.getElementById('feedback');
-let awaiting='';
+ if(order.length===4)progress.textContent='四個順位已完成，請填寫基本資料並送出。';
+ else progress.textContent='已選 '+order.length+'/4 項｜接下來請選擇'+names[order.length]+'順位';
+ for(let i=1;i<=4;i++)document.getElementById('rank'+i).value=order[i-1]||'';
+}
+const hidden=document.getElementById('hidden-ranks');
+for(let i=1;i<=4;i++){const el=document.createElement('input');el.type='hidden';el.id='rank'+i;el.name='rank'+i;hidden.append(el);}
+document.getElementById('reset').addEventListener('click',()=>{order.length=0;feedback.textContent='';render();});
+const form=document.getElementById('ranking-form'),send=document.getElementById('send');let pending='';
 form.addEventListener('submit',e=>{
- const ranks=[1,2,3,4].map(i=>document.getElementById('rank'+i).value);
- if(new Set(ranks).size!==4||ranks.some(v=>!v)){e.preventDefault();feed.textContent='請將四個主題分別排入第一至第四順位。';feed.className='feedback error';return;}
- if(awaiting){e.preventDefault();return;}
- awaiting=(Date.now()+'-'+Math.random().toString(36).slice(2));
- document.getElementById('token').value=awaiting;
- btn.disabled=true;btn.textContent='傳送中…';feed.textContent='正在儲存分組意願…';feed.className='feedback';
+ if(order.length!==4){e.preventDefault();feedback.textContent='請先完成四大主題的順位排序。';feedback.className='feedback error';window.scrollTo({top:topicList.getBoundingClientRect().top+window.scrollY-75,behavior:'smooth'});return;}
+ if(pending){e.preventDefault();return;}
+ pending=Date.now()+'-'+Math.random().toString(36).slice(2);
+ document.getElementById('token').value=pending;
+ send.disabled=true;send.textContent='送出中…';feedback.textContent='正在儲存分組志願…';feedback.className='feedback';
 });
 window.addEventListener('message',e=>{
- if(!e.data||e.data.source!=='workshop-ranking'||e.data.token!==awaiting)return;
- awaiting='';btn.disabled=false;btn.textContent='送出分組志願';
- feed.textContent=e.data.message;feed.className=e.data.ok?'feedback good':'feedback error';
+ if(e.origin!=='https://script.google.com'&&!e.origin.endsWith('.googleusercontent.com'))return;
+ if(!e.data||e.data.source!=='workshop-ranking'||e.data.token!==pending)return;
+ pending='';send.disabled=false;send.textContent='確認順位並送出';
+ feedback.textContent=e.data.message;feedback.className=e.data.ok?'feedback good':'feedback error';
 });
+render();
 </script></body></html>
