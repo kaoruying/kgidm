@@ -10,7 +10,7 @@ body{margin:0}.shell{max-width:790px;margin:0 auto;padding:28px 18px 60px}
 .eyebrow{color:#edba66;font-size:12px;letter-spacing:1px;font-weight:800}.hero h1{font-size:clamp(24px,4vw,32px);margin:10px 0}.hero p{font-size:14px;line-height:1.8;margin:0;color:#e7eff9}
 .panel{background:white;border:1px solid #e1e7f0;border-radius:17px;padding:24px 28px;margin-top:16px}
 h2{font-size:18px;margin:0 0 15px}.info{font-size:13px;line-height:1.8;color:#57677a;margin:0 0 14px}
-.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.topic-card{padding:16px;border:1px solid #e3e9f1;border-radius:12px;background:#fbfcff}.topic-card h3{font-size:15px;margin:0 0 7px;color:#163a66}.topic-card p{font-size:13px;line-height:1.75;color:#52647b;margin:0}.panel-lead{font-size:13px;line-height:1.85;color:#52647b;margin:0 0 16px}.details{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-size:14px;font-weight:700;display:block}
+.topic-grid{display:grid;grid-template-columns:1fr;gap:10px}.topic-card{display:flex;align-items:center;gap:14px;touch-action:pan-y;user-select:none}.topic-card.dragging{opacity:.55;border-color:#c59c53;background:#fff6e7}.topic-card.over{border-color:#b88a43;box-shadow:0 0 0 2px #dfc18d}.rank-badge{background:#153b68;color:#fff;border-radius:9px;padding:9px 8px;min-width:86px;text-align:center;font-size:12px;font-weight:800}.topic-main{flex:1}.drag-handle{border:0;background:#eef3fa;color:#244b76;border-radius:9px;padding:10px;cursor:grab;font-size:21px;touch-action:none;user-select:none;line-height:1}.move-buttons{display:flex;flex-direction:column;gap:5px}.move-buttons button{background:#eef3fa;color:#244b76;border:0;padding:5px 10px;margin:0;width:auto;border-radius:6px;font-size:13px;cursor:pointer}.move-buttons button:disabled{opacity:.25;cursor:default}.topic-card{padding:16px;border:1px solid #e3e9f1;border-radius:12px;background:#fbfcff}.topic-card h3{font-size:15px;margin:0 0 7px;color:#163a66}.topic-card p{font-size:13px;line-height:1.75;color:#52647b;margin:0}.panel-lead{font-size:13px;line-height:1.85;color:#52647b;margin:0 0 16px}.details{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-size:14px;font-weight:700;display:block}
 input,select{width:100%;background:#fff;margin-top:8px;border:1px solid #c9d4e2;border-radius:9px;padding:13px;font:inherit;font-size:14px;color:#1b3050}
 input:focus,select:focus{outline:2px solid #a3c2f5;border-color:#3975c2}
 .rank{display:grid;grid-template-columns:115px 1fr;align-items:center;gap:15px;margin:13px 0}.rank b{font-size:14px}.rank select{margin:0}
@@ -26,13 +26,12 @@ button:disabled{opacity:.45;cursor:wait}.feedback{font-size:14px;line-height:1.7
 <p>工作坊仍以七週策略執行成果分享為主。請依最希望強化的經營主題，填寫第一至第四順位。</p></section>
 <section class="panel" aria-labelledby="topics-title">
 <h2 id="topics-title">四大經營主題</h2>
-<p class="panel-lead">依您目前最希望突破的經營課題選擇。各組仍以七週執行成果為分享核心，並從不同經營角度提供回饋。</p>
-<div class="topic-grid">
-<article class="topic-card"><h3>人才育成與新人定著</h3><p>聚焦新人啟專、育成輔導、活動養成與留存機制。</p></article>
-<article class="topic-card"><h3>願景領導與增員驅動</h3><p>聚焦團隊願景、增員開口量、邀約行動與參與動能。</p></article>
-<article class="topic-card"><h3>經營複製與組織擴張</h3><p>聚焦主管培育、經營模式複製與組織擴張。</p></article>
-<article class="topic-card"><h3>自律領導與團隊自主</h3><p>聚焦以身作則、責任承擔與夥伴自主行動。</p></article>
-</div></section>
+<p class="panel-lead">按住右側「≡」拖動卡片，排出第一至第四順位；手機也可拖動。各組仍以七週執行成果為分享核心。</p>
+<div class="topic-grid" id="topic-list">
+<article class="topic-card" data-topic="人才育成與新人定著"><span class="rank-badge"></span><div class="topic-main"><h3>人才育成與新人定著</h3><p>聚焦新人啟專、育成輔導、活動養成與留存機制。</p></div><div class="move-buttons"><button type="button" class="up" aria-label="往上一個順位">↑</button><button type="button" class="down" aria-label="往下一個順位">↓</button></div><button class="drag-handle" type="button" aria-label="按住拖動調整順位">☰</button></article>
+<article class="topic-card" data-topic="願景領導與增員驅動"><span class="rank-badge"></span><div class="topic-main"><h3>願景領導與增員驅動</h3><p>聚焦團隊願景、增員開口量、邀約行動與參與動能。</p></div><div class="move-buttons"><button type="button" class="up" aria-label="往上一個順位">↑</button><button type="button" class="down" aria-label="往下一個順位">↓</button></div><button class="drag-handle" type="button" aria-label="按住拖動調整順位">☰</button></article>
+<article class="topic-card" data-topic="經營複製與組織擴張"><span class="rank-badge"></span><div class="topic-main"><h3>經營複製與組織擴張</h3><p>聚焦主管培育、經營模式複製與組織擴張。</p></div><div class="move-buttons"><button type="button" class="up" aria-label="往上一個順位">↑</button><button type="button" class="down" aria-label="往下一個順位">↓</button></div><button class="drag-handle" type="button" aria-label="按住拖動調整順位">☰</button></article>
+<article class="topic-card" data-topic="自律領導與團隊自主"><span class="rank-badge"></span><div class="topic-main"><h3>自律領導與團隊自主</h3><p>聚焦以身作則、責任承擔與夥伴自主行動。</p></div><div class="move-buttons"><button type="button" class="up" aria-label="往上一個順位">↑</button><button type="button" class="down" aria-label="往下一個順位">↓</button></div><button class="drag-handle" type="button" aria-label="按住拖動調整順位">☰</button></article></div></section>
 <form id="ranking-form" method="POST" target="submit-frame" action="https://script.google.com/macros/s/AKfycbzTQvqXxxbfxyFm9Q4oPf4-YzhEjdMDdfXD30cQdwrwMmyESQM_WiXHszairnmXm8Drfw/exec">
 <section class="panel"><h2>基本資料</h2>
 <div class="details"><label>通訊處<input name="unit" required maxlength="70" placeholder="請輸入通訊處名稱" autocomplete="organization"></label>
@@ -49,23 +48,57 @@ button:disabled{opacity:.45;cursor:wait}.feedback{font-size:14px;line-height:1.7
 <div class="footer">凱基人壽｜業務訓練部</div>
 </main>
 <script>
-const topics=['人才育成與新人定著','願景領導與增員驅動','經營複製與組織擴張','自律領導與團隊自主'];
 const holder=document.getElementById('ranks');
+const list=document.getElementById('topic-list');
 for(let i=1;i<=4;i++){
- const row=document.createElement('div');row.className='rank';
- const label=document.createElement('label');label.htmlFor='rank'+i;label.textContent=['','第一順位','第二順位','第三順位','第四順位'][i];
- const select=document.createElement('select');select.id='rank'+i;select.name='rank'+i;select.required=true;
- select.innerHTML='<option value="">請選擇主題</option>';
- for(const t of topics){const op=document.createElement('option');op.value=t;op.textContent=t;select.appendChild(op);}
- select.addEventListener('change',syncChoices);row.append(label,select);holder.appendChild(row);
+ const input=document.createElement('input');input.type='hidden';input.name='rank'+i;input.id='rank'+i;holder.appendChild(input);
 }
-function syncChoices(){
- const selects=[...holder.querySelectorAll('select')];
- const selected=selects.map(s=>s.value).filter(Boolean);
- for(const s of selects)for(const opt of [...s.options]){
-   if(!opt.value)continue;opt.disabled=selected.includes(opt.value)&&opt.value!==s.value;
+function cards(){return [...list.querySelectorAll('.topic-card')];}
+function syncRanks(){
+ cards().forEach((card,i)=>{
+  card.querySelector('.rank-badge').textContent='第'+['一','二','三','四'][i]+'順位';
+  document.getElementById('rank'+(i+1)).value=card.dataset.topic;
+  card.querySelector('.up').disabled=i===0;
+  card.querySelector('.down').disabled=i===3;
+ });
+}
+list.addEventListener('click',e=>{
+ const button=e.target.closest('.up,.down');
+ if(!button)return;
+ const card=button.closest('.topic-card');
+ const array=cards(),i=array.indexOf(card);
+ if(button.classList.contains('up')&&i>0)list.insertBefore(card,array[i-1]);
+ if(button.classList.contains('down')&&i<3)list.insertBefore(array[i+1],card);
+ syncRanks();
+});
+let held=null,originY=0,moved=false;
+list.addEventListener('pointerdown',e=>{
+ const handle=e.target.closest('.drag-handle');
+ if(!handle)return;
+ e.preventDefault();
+ held=handle.closest('.topic-card');originY=e.clientY;moved=false;
+ held.classList.add('dragging');
+ handle.setPointerCapture(e.pointerId);
+});
+list.addEventListener('pointermove',e=>{
+ if(!held)return;
+ e.preventDefault();
+ if(Math.abs(e.clientY-originY)>4)moved=true;
+ if(!moved)return;
+ for(const card of cards())card.classList.remove('over');
+ const other=document.elementFromPoint(e.clientX,e.clientY)?.closest('.topic-card');
+ if(other&&other!==held&&list.contains(other)){
+  other.classList.add('over');
+  const b=other.getBoundingClientRect();
+  if(e.clientY>b.top+b.height/2)list.insertBefore(held,other.nextSibling);
+  else list.insertBefore(held,other);
+  syncRanks();
  }
-}
+});
+function finishDrag(){if(!held)return;held.classList.remove('dragging');for(const card of cards())card.classList.remove('over');held=null;syncRanks();}
+list.addEventListener('pointerup',finishDrag);
+list.addEventListener('pointercancel',finishDrag);
+syncRanks();
 const form=document.getElementById('ranking-form'),btn=document.getElementById('send'),feed=document.getElementById('feedback');
 let awaiting='';
 form.addEventListener('submit',e=>{
