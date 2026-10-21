@@ -15,12 +15,12 @@ body{margin:0;background:#f4f6fa;color:#173150;font-family:"Noto Sans TC","PingF
 h2{font-size:20px;margin:0 0 13px}
 .hint{font-size:15px;line-height:1.75;color:#51647b;margin:0 0 17px}
 .sort-list{display:flex;flex-direction:column;gap:12px}
-.sort-card{display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:96px;padding:12px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:pan-y;cursor:default;position:relative}
+.sort-card{display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:96px;padding:12px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:pan-y;cursor:grab;position:relative}
 .sort-card[data-theme="0"]{--tone-bg:#ecf5fc;--tone-border:#c4deef;--tone-accent:#367ca4}
 .sort-card[data-theme="1"]{--tone-bg:#fff5e7;--tone-border:#efd8b3;--tone-accent:#b17d2f}
 .sort-card[data-theme="2"]{--tone-bg:#edf7f2;--tone-border:#c7e3d4;--tone-accent:#407c64}
 .sort-card[data-theme="3"]{--tone-bg:#f3f0f9;--tone-border:#dcd2ee;--tone-accent:#75649e}
-.sort-card.dragging{opacity:.82;z-index:5;box-shadow:0 9px 22px #18375738;outline:2px solid var(--tone-accent);transition:none}
+.sort-card.dragging{cursor:grabbing;opacity:.82;z-index:5;box-shadow:0 9px 22px #18375738;outline:2px solid var(--tone-accent);transition:none}
 .sort-card.drop-target{outline:3px dashed var(--tone-accent);outline-offset:2px}
 .sort-rank{border-radius:12px;background:var(--tone-accent);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px;min-height:66px}
 .sort-rank strong{font-size:45px;line-height:1;font-weight:900;font-variant-numeric:tabular-nums}
@@ -28,7 +28,7 @@ h2{font-size:20px;margin:0 0 13px}
 .sort-text{min-width:0}
 .sort-name{font-size:18px;font-weight:850;line-height:1.4;margin:0 0 4px}
 .sort-desc{font-size:13px;color:#50637a;line-height:1.5;margin:0}
-.drag-icon{display:flex;align-items:center;justify-content:center;width:44px;min-height:68px;border:1px solid var(--tone-border);border-radius:10px;background:#ffffffbb;font-size:24px;line-height:1;color:var(--tone-accent);text-align:center;font-weight:800;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.drag-icon{display:flex;align-items:center;justify-content:center;width:44px;min-height:68px;border:1px solid var(--tone-border);border-radius:10px;background:#ffffffbb;font-size:24px;line-height:1;color:var(--tone-accent);text-align:center;font-weight:800;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .sort-arrows{display:flex;gap:8px;justify-content:flex-end;margin-top:7px}
 .sort-arrows button{background:#edf2f8;color:#183c66;border:0;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:750;cursor:pointer;touch-action:manipulation}
 .sort-arrows button:disabled{opacity:.35}
@@ -54,7 +54,7 @@ h2{font-size:20px;margin:0 0 13px}
 <section class="hero"><div class="eyebrow">10/30 WORKSHOP</div><h1>工作坊分組志願調查</h1><p>工作坊仍以七週策略執行成果分享為主。請依最希望強化的經營主題，排出第一至第四順位。</p></section>
 <section class="panel">
 <h2>分組四大經營主題</h2>
-<p class="hint">請按住卡片<strong>右側的 ☰ 把手</strong>上下拖動，或按「上移／下移」。左側數字即為志願順位，其他位置可正常滑動頁面。</p>
+<p class="hint"><strong>長按整張彩色卡片約半秒</strong>，即可上下拖動排序；平常滑動頁面不會改變順位。左側大數字就是目前的志願順位。</p>
 <div id="sort-list" class="sort-list" aria-label="工作坊四大主題志願順序"></div>
 <p class="sort-status" id="sort-status" aria-live="polite">目前由上到下依序為第 1 至第 4 順位。</p>
 </section>
@@ -162,69 +162,97 @@ sortList.addEventListener('click',e=>{
  if(b.classList.contains('down')&&i<all.length-1)sortList.insertBefore(all[i+1],card);
  updateRanks();
 });
-// 只有拖曳把手會啟動排序，避免手機滑頁及選擇姓名時誤觸。
+// 手機：長按整張卡片才排序；短觸與一般上下滑動仍由瀏覽器處理。
 let drag=null;
+let press=null;
 let autoScrollFrame=0;
+function startCardDrag(card,y){
+ if(drag)return;
+ drag={card,clientY:y};
+ card.classList.add('dragging');
+ status.textContent='拖動卡片即可調整 1～4 順位';
+ autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
+}
 function moveDraggedCard(y){
  if(!drag)return;
- const other=cards().find(card=>card!==drag.card&&(()=>{
+ const list=cards();
+ const other=list.find(card=>{
+  if(card===drag.card)return false;
   const rect=card.getBoundingClientRect();
   return y>=rect.top&&y<=rect.bottom;
- })());
- if(other){
-  const rect=other.getBoundingClientRect();
-  const after=y>rect.top+rect.height/2;
-  const before=after?other.nextSibling:other;
-  if(before!==drag.card){
-   sortList.insertBefore(drag.card,before);
-   updateRanks();
-  }
- }
+ });
+ if(!other)return;
+ const rect=other.getBoundingClientRect();
+ const before=y>rect.top+rect.height/2?other.nextSibling:other;
+ if(before===drag.card)return;
+ sortList.insertBefore(drag.card,before);
+ updateRanks();
 }
 function scrollWhileDragging(){
  if(!drag)return;
- const edge=92;
- const y=drag.clientY;
+ const edge=100,y=drag.clientY;
  let step=0;
- if(y<edge)step=-Math.min(17,Math.max(3,(edge-y)/5));
- else if(y>window.innerHeight-edge)step=Math.min(17,Math.max(3,(y-(window.innerHeight-edge))/5));
- if(step){
-  window.scrollBy(0,step);
-  moveDraggedCard(y);
- }
+ if(y<edge)step=-Math.min(16,Math.max(3,(edge-y)/5));
+ else if(y>window.innerHeight-edge)step=Math.min(16,Math.max(3,(y-window.innerHeight+edge)/5));
+ if(step){window.scrollBy(0,step);moveDraggedCard(y);}
  autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
 }
-sortList.addEventListener('pointerdown',e=>{
- const handle=e.target.closest('.drag-icon');
- if(!handle||e.button!==0)return;
- const card=handle.closest('.sort-card');
- if(!card)return;
- e.preventDefault();
- drag={card,pointerId:e.pointerId,clientY:e.clientY};
- card.classList.add('dragging');
- sortList.setPointerCapture(e.pointerId);
- autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
-});
-sortList.addEventListener('pointermove',e=>{
- if(!drag||e.pointerId!==drag.pointerId)return;
- e.preventDefault();
- drag.clientY=e.clientY;
- moveDraggedCard(e.clientY);
-});
-function finishDrag(e){
- if(!drag||e.pointerId!==drag.pointerId)return;
+function finishCardDrag(){
+ if(!drag)return;
  drag.card.classList.remove('dragging');
  drag=null;
  cancelAnimationFrame(autoScrollFrame);
  updateRanks();
 }
-sortList.addEventListener('pointerup',finishDrag);
-sortList.addEventListener('pointercancel',finishDrag);
-sortList.addEventListener('lostpointercapture',()=>{
- if(!drag)return;
- drag.card.classList.remove('dragging');
- drag=null;cancelAnimationFrame(autoScrollFrame);updateRanks();
+function clearPress(){
+ if(press&&press.timer)clearTimeout(press.timer);
+ press=null;
+}
+sortList.addEventListener('touchstart',e=>{
+ if(e.target.closest('button')||e.touches.length!==1)return;
+ const card=e.target.closest('.sort-card');
+ if(!card)return;
+ clearPress();
+ const touch=e.touches[0];
+ const state={card,x:touch.clientX,y:touch.clientY,timer:null};
+ state.timer=setTimeout(()=>{
+  if(press!==state)return;
+  startCardDrag(card,state.y);
+  if(navigator.vibrate)navigator.vibrate(15);
+ },330);
+ press=state;
+},{passive:true});
+sortList.addEventListener('touchmove',e=>{
+ if(!press&&!drag)return;
+ if(e.touches.length!==1){clearPress();finishCardDrag();return;}
+ const touch=e.touches[0];
+ if(drag){
+  // 長按進入排序模式後，阻止網頁原生捲動。
+  if(e.cancelable)e.preventDefault();
+  drag.clientY=touch.clientY;
+  moveDraggedCard(touch.clientY);
+ }else if(press&&Math.hypot(touch.clientX-press.x,touch.clientY-press.y)>9){
+  // 使用者正在正常滑頁：取消長按，不更動順位。
+  clearPress();
+ }
+},{passive:false});
+sortList.addEventListener('touchend',()=>{clearPress();finishCardDrag();});
+sortList.addEventListener('touchcancel',()=>{clearPress();finishCardDrag();});
+// 電腦滑鼠：按住任何非按鈕的卡片區域即可移動。
+sortList.addEventListener('pointerdown',e=>{
+ if(e.pointerType==='touch'||e.button!==0||e.target.closest('button'))return;
+ const card=e.target.closest('.sort-card');if(!card)return;
+ e.preventDefault();
+ startCardDrag(card,e.clientY);
+ sortList.setPointerCapture(e.pointerId);
 });
+sortList.addEventListener('pointermove',e=>{
+ if(e.pointerType==='touch'||!drag)return;
+ drag.clientY=e.clientY;
+ moveDraggedCard(e.clientY);
+});
+sortList.addEventListener('pointerup',e=>{if(e.pointerType!=='touch')finishCardDrag();});
+sortList.addEventListener('pointercancel',e=>{if(e.pointerType!=='touch')finishCardDrag();});
 updateRanks();
 const form=document.getElementById('ranking-form'),send=document.getElementById('send');let pending='';
 let waitTimer=null;
