@@ -3,7 +3,7 @@
  * 1. 全部貼入原本的 Apps Script 專案。
  * 2. 執行 setupWorkshopSheet() 一次，並完成授權。
  * 3. 執行 testWorkshopBackend() 查看後台試算表。
- * 4. 部署 > 管理部署作業 > 編輯 > 新版本 > 部署。
+ * 4. 重要：貼上新程式後，必須「部署 > 管理部署作業 > 編輯 > 新版本 > 部署」，才能生效。
  *    執行身分：我；存取權：任何人（依公司政策允許的設定）。
  * 5. 將 /exec 網址更新到 GitHub 問卷（若網址不變則不用）。
  */
@@ -36,8 +36,10 @@ function getSheet_() {
   let sheet = ss.getSheetByName(CONFIG.tab);
   if (!sheet) sheet = ss.insertSheet(CONFIG.tab);
   if (sheet.getLastRow() === 0) sheet.getRange(1, 1, 1, 8).setValues([CONFIG.headers]);
-  if (!sheet.getRange(1, 8).getValue()) sheet.getRange(1, 8).setValue('送出識別碼');
-  sheet.setFrozenRows(1);
+  // 首次建立時才設定標題，避免每次提交都寫入表頭屬性。
+  if (sheet.getLastRow() === 1 && !sheet.getRange(1, 8).getValue()) {
+    sheet.getRange(1, 8).setValue('送出識別碼');
+  }
   return sheet;
 }
 
@@ -56,13 +58,8 @@ function doGet(e) {
   const params = (e && e.parameter) || {};
   const token = String(params.receipt || '');
   if (params.callback === 'workshopReceipt' && /^[a-zA-Z0-9._-]{12,100}$/.test(token)) {
-    const sheet = getSheet_();
-    const last = sheet.getLastRow();
-    let found = false;
-    if (last > 1) {
-      found = sheet.getRange(2, 8, last - 1, 1).getValues()
-        .some(row => String(row[0]) === token);
-    }
+    // 快速確認：寫入成功後才建立短期回執，不必每次讀取整張試算表。
+    const found = CacheService.getScriptCache().get('receipt_' + token) === 'ok';
     const payload = JSON.stringify({token: token, ok: found});
     return ContentService.createTextOutput('window.workshopReceipt(' + payload + ');')
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
@@ -108,6 +105,8 @@ function doPost(e) {
         new Date(), safe(unit), safe(name), ...ranks, token
       ]]);
       SpreadsheetApp.flush();
+      // 僅在試算表實際寫入完成後回報成功，保存十分鐘供網頁確認。
+      CacheService.getScriptCache().put('receipt_' + token, 'ok', 600);
     } finally {
       lock.releaseLock();
     }
