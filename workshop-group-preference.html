@@ -104,7 +104,7 @@ body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
 'use strict';
 const themes=[
  {name:'人才育成與新人定著',desc:'聚焦新人啟專、育成輔導、活動養成與留存機制。'},
- {name:'願景領導與增員驅動',desc:'聚焦團隊願景、增員開口量、邀約行動與參與動能。'},
+ {name:'增員驅動與願景領導',backendName:'願景領導與增員驅動',desc:'聚焦團隊願景、增員開口量、邀約行動與參與動能。'},
  {name:'經營複製與組織擴張',desc:'聚焦主管培育、經營模式複製與組織擴張。'},
  {name:'自律領導與團隊自主',desc:'聚焦以身作則、責任承擔與夥伴自主行動。'}
 ];
@@ -175,7 +175,7 @@ function cards(){return [...sortList.querySelectorAll('.sort-card')];}
 function updateRanks(){
  cards().forEach((card,i)=>{
   card.querySelector('.sort-rank strong').textContent=i+1;
-  card.setAttribute('aria-label','第 '+(i+1)+' 順位：'+card.dataset.topic);
+  card.setAttribute('aria-label','第 '+(i+1)+' 順位：'+card.dataset.displayTopic);
   document.getElementById('rank'+(i+1)).value=card.dataset.topic;
   card.querySelector('.up').disabled=i===0;
   card.querySelector('.down').disabled=i===3;
@@ -184,7 +184,7 @@ function updateRanks(){
 }
 themes.forEach((theme,i)=>{
  const card=document.createElement('article');card.className='sort-card';
- card.dataset.theme=i;card.dataset.topic=theme.name;
+ card.dataset.theme=i;card.dataset.topic=theme.backendName||theme.name;card.dataset.displayTopic=theme.name;
  const badge=document.createElement('div');badge.className='sort-rank';
  const number=document.createElement('strong');badge.append(number);
  const word=document.createElement('span');word.textContent='順位';badge.append(word);
