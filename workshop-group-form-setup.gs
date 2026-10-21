@@ -19,6 +19,12 @@ const SETTINGS = {
   parentOrigin: 'https://kaoruying.github.io'
 };
 
+function testWorkshopBackend() {
+  const sh = getSheet_();
+  Logger.log('試算表網址：' + sh.getParent().getUrl());
+  Logger.log('目前資料筆數：' + Math.max(0, sh.getLastRow() - 1));
+}
+
 function setupWorkshopSheet() {
   const sheet = getSheet_();
   Logger.log('後台試算表：https://docs.google.com/spreadsheets/d/' + sheet.getParent().getId() + '/edit');
@@ -118,7 +124,7 @@ function respond_(token,ok,message) {
     .replace(/</g,'\\u003c');
   return HtmlService.createHtmlOutput(
     '<!doctype html><html><body><script>' +
-    'window.top.postMessage(' + data + ',' + JSON.stringify(SETTINGS.parentOrigin) + ');' +
+    'window.parent.postMessage(' + data + ',' + JSON.stringify(SETTINGS.parentOrigin) + ');' +
     '</script><p>' + (ok ? '填寫完成' : '填寫失敗') + '</p></body></html>'
   );
 }
