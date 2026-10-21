@@ -41,6 +41,13 @@ body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
 .sort-arrows button{background:#edf2f8;color:#183c66;border:0;border-radius:8px;padding:3px 9px;font-size:12px;font-weight:750;cursor:pointer;touch-action:manipulation}
 .sort-arrows button:disabled{opacity:.35}
 .sort-status{font-size:14px;font-weight:700;margin-top:13px;color:#37628c}
+.identity-panel{padding:13px 18px 11px}
+.identity-panel h2{font-size:16px;font-weight:750;margin:0 0 8px;line-height:1.35}
+.identity-panel .identity-field{margin-bottom:7px}
+.identity-panel .identity-field:last-of-type{margin-bottom:0}
+.identity-panel .field{font-size:15px;font-weight:700}
+.identity-panel #region,.identity-panel #participant{font-size:16px;padding:6px 10px;min-height:36px;margin-top:4px}
+.identity-panel .identity-note{font-size:12px;line-height:1.4;margin-top:3px}
 .field{display:block;font-size:17px;font-weight:800}
 #region,#participant{width:100%;margin-top:5px;border:1px solid #c9d6e6;border-radius:9px;padding:7px 10px;background:#fff;font-size:17px;font-family:inherit;color:#15385e;max-width:100%;min-width:0}
 #region:focus,#participant:focus{outline:2px solid #9cbee9}
@@ -51,7 +58,7 @@ body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
 .feedback{margin-top:13px;font-size:14px;line-height:1.65}.feedback.good{color:#126b4d}.feedback.error{color:#a83232}
 .footer{text-align:center;color:#78879b;font-size:12px;margin-top:20px}
 @media(max-width:550px){
-.shell{padding:16px 14px 45px}.hero{padding:7px 12px}.panel{padding:18px 14px}
+.shell{padding:16px 14px 45px}.hero{padding:7px 12px}.panel{padding:18px 14px}.identity-panel{padding:12px 14px 10px}
 .sort-card{grid-template-columns:55px minmax(0,1fr) 38px;padding:7px 8px;gap:8px;min-height:75px}
 .sort-rank{min-height:52px}.sort-rank strong{font-size:37px}
 .sort-name{font-size:17px}.sort-desc{font-size:13px;line-height:1.35}.drag-icon{font-size:20px;min-height:52px;width:38px}
@@ -61,7 +68,7 @@ body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
 <div class="brand"><span class="logo">K</span>凱基人壽｜企業家經營班</div>
 <section class="hero"><div class="eyebrow">10/30 WORKSHOP</div><h1>工作坊分組志願調查</h1></section>
 <form id="ranking-form" method="POST" target="submit-frame" action="https://script.google.com/macros/s/AKfycbxdAc-ydOfYxY6n_DQezAgxA3tLx7tkdVipwotLjo-2t2A8RbUbrINpYdfo5mKNs0gjXw/exec">
-<section class="panel">
+<section class="panel identity-panel">
 <h2>基本資料</h2>
 <div class="identity-field"><label class="field" for="region">區域中心</label>
 <select id="region" required aria-required="true"><option value="">請選擇區域中心</option></select></div>
