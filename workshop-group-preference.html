@@ -3,6 +3,8 @@
 <title>企業家經營班｜工作坊分組志願調查</title>
 <style>
 *{box-sizing:border-box}
+html,body,body *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+select,option,button{touch-action:manipulation}
 body{margin:0;background:#f4f6fa;color:#173150;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
 .shell{max-width:790px;margin:auto;padding:25px 18px 60px}
 .brand{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:800;margin-bottom:20px}
@@ -173,7 +175,7 @@ function cards(){return [...sortList.querySelectorAll('.sort-card')];}
 function updateRanks(){
  cards().forEach((card,i)=>{
   card.querySelector('.sort-rank strong').textContent=i+1;
-  card.setAttribute('aria-label','第 '+(i+1)+' 順位：'+card.dataset.topic);
+  card.setAttribute('aria-label','第 '+(i+1)+' 順位：'+card.dataset.topic+'組');
   document.getElementById('rank'+(i+1)).value=card.dataset.topic;
   card.querySelector('.up').disabled=i===0;
   card.querySelector('.down').disabled=i===3;
@@ -187,7 +189,7 @@ themes.forEach((theme,i)=>{
  const number=document.createElement('strong');badge.append(number);
  const word=document.createElement('span');word.textContent='順位';badge.append(word);
  const content=document.createElement('div');content.className='sort-text';
- const title=document.createElement('h3');title.className='sort-name';title.textContent=theme.name;
+ const title=document.createElement('h3');title.className='sort-name';title.textContent=theme.name+'組';
  const desc=document.createElement('p');desc.className='sort-desc';desc.textContent=theme.desc;
  content.append(title,desc);
  const handle=document.createElement('div');handle.className='drag-icon';handle.textContent='☰';handle.setAttribute('role','img');handle.setAttribute('aria-label','按住這裡拖動排序');
