@@ -2,7 +2,7 @@
  * 企業家經營班 10/30｜網頁分組志願登記後台
  * 1. 整份取代原本 Apps Script 程式碼。
  * 2. 執行 setupWorkshopSheet() 一次，授權後查看執行紀錄的試算表網址。
- * 3. 「部署 > 管理部署作業 > 編輯 > 版本選新版本 > 部署」。
+ * 3. 先執行 testWorkshopBackend()，確認工作表能正常開啟。\n * 4. 「部署 > 管理部署作業 > 編輯 > 版本選新版本 > 部署」。
  * 4. 學員從 GitHub 網頁填寫，資料直接寫到你的 Google 試算表。
  * 不需要 Google 表單，且對外不揭露與談人姓名。
  */
@@ -44,8 +44,25 @@ function getSheet_() {
 }
 
 // Google Apps Script 網頁部署必須含 doGet，可顯示服務狀態。
-function doGet() {
-  return HtmlService.createHtmlOutput('企業家經營班分組回覆服務已啟用。請從學員網頁填寫。');
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  // 只以隨機識別碼核對送出結果，不透過公開網址揭露學員資料。
+  if (p.receipt && p.callback === 'workshopReceipt') {
+    const token = String(p.receipt).slice(0, 100);
+    const found = CacheService.getScriptCache().get('receipt:' + token) === '1';
+    const payload = JSON.stringify({token:token,ok:found}).replace(/</g,'\\u003c');
+    return ContentService.createTextOutput('window.workshopReceipt(' + payload + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return HtmlService.createHtmlOutput('企業家經營班分組回覆服務已啟用。');
+}
+
+function testWorkshopBackend() {
+  const sheet = getSheet_();
+  const spreadsheet = sheet.getParent();
+  Logger.log('後台已連線：' + spreadsheet.getUrl());
+  Logger.log('工作表：' + sheet.getName());
+  Logger.log('目前資料筆數：' + Math.max(0,sheet.getLastRow()-1));
 }
 
 // 使用原生 HTML 表單跨網域 POST，不需使用者登入 Google 表單。
@@ -83,6 +100,10 @@ function doPost(e) {
       sheet.getRange(targetRow,1,1,7).setValues([[
         new Date(),safeText(unit),safeText(name),...ranks
       ]]);
+      SpreadsheetApp.flush();
+      if (token && /^[A-Za-z0-9._-]{8,100}$/.test(token)) {
+        CacheService.getScriptCache().put('receipt:' + token, '1', 600);
+      }
     } finally {
       lock.releaseLock();
     }
