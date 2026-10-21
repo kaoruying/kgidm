@@ -1,130 +1,130 @@
 /**
- * 企業家經營班 10/30｜網頁分組志願登記後台
- * 1. 整份取代原本 Apps Script 程式碼。
- * 2. 執行 setupWorkshopSheet() 一次，授權後查看執行紀錄的試算表網址。
- * 3. 先執行 testWorkshopBackend()，確認工作表能正常開啟。\n * 4. 「部署 > 管理部署作業 > 編輯 > 版本選新版本 > 部署」。
- * 4. 學員從 GitHub 網頁填寫，資料直接寫到你的 Google 試算表。
- * 不需要 Google 表單，且對外不揭露與談人姓名。
+ * 企業家經營班｜10/30 工作坊分組志願後台（完整替換版）
+ * 1. 全部貼入原本的 Apps Script 專案。
+ * 2. 執行 setupWorkshopSheet() 一次，並完成授權。
+ * 3. 執行 testWorkshopBackend() 查看後台試算表。
+ * 4. 部署 > 管理部署作業 > 編輯 > 新版本 > 部署。
+ *    執行身分：我；存取權：任何人（依公司政策允許的設定）。
+ * 5. 將 /exec 網址更新到 GitHub 問卷（若網址不變則不用）。
  */
-const SETTINGS = {
-  propertyKey: 'WORKSHOP_RANK_SHEET_ID',
+const CONFIG = {
+  key: 'WORKSHOP_RANK_SHEET_ID',
   tab: '分組志願回覆',
-  headings: ['填寫時間','通訊處','處經理姓名','第一順位','第二順位','第三順位','第四順位'],
+  headers: [
+    '填寫時間', '通訊處', '處經理姓名',
+    '第一順位', '第二順位', '第三順位', '第四順位', '送出識別碼'
+  ],
   topics: [
     '人才育成與新人定著',
     '願景領導與增員驅動',
     '經營複製與組織擴張',
     '自律領導與團隊自主'
   ],
-  parentOrigin: 'https://kaoruying.github.io'
+  origin: 'https://kaoruying.github.io'
 };
 
-function testWorkshopBackend() {
-  const sh = getSheet_();
-  Logger.log('試算表網址：' + sh.getParent().getUrl());
-  Logger.log('目前資料筆數：' + Math.max(0, sh.getLastRow() - 1));
+function getSheet_() {
+  const props = PropertiesService.getScriptProperties();
+  let id = props.getProperty(CONFIG.key);
+  let ss;
+  if (id) {
+    ss = SpreadsheetApp.openById(id);
+  } else {
+    ss = SpreadsheetApp.create('企業家經營班_1030工作坊_分組意願回覆');
+    props.setProperty(CONFIG.key, ss.getId());
+  }
+  let sheet = ss.getSheetByName(CONFIG.tab);
+  if (!sheet) sheet = ss.insertSheet(CONFIG.tab);
+  if (sheet.getLastRow() === 0) sheet.getRange(1, 1, 1, 8).setValues([CONFIG.headers]);
+  if (!sheet.getRange(1, 8).getValue()) sheet.getRange(1, 8).setValue('送出識別碼');
+  sheet.setFrozenRows(1);
+  return sheet;
 }
 
 function setupWorkshopSheet() {
   const sheet = getSheet_();
-  Logger.log('後台試算表：https://docs.google.com/spreadsheets/d/' + sheet.getParent().getId() + '/edit');
-}
-
-function getSheet_() {
-  const properties = PropertiesService.getScriptProperties();
-  let id = properties.getProperty(SETTINGS.propertyKey);
-  const spreadsheet = id
-    ? SpreadsheetApp.openById(id)
-    : SpreadsheetApp.create('企業家經營班_1030工作坊_分組意願回覆');
-  if (!id) {
-    id = spreadsheet.getId();
-    properties.setProperty(SETTINGS.propertyKey, id);
-  }
-  let sheet = spreadsheet.getSheetByName(SETTINGS.tab);
-  if (!sheet) sheet = spreadsheet.insertSheet(SETTINGS.tab);
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(SETTINGS.headings);
-    sheet.setFrozenRows(1);
-  }
-  return sheet;
-}
-
-// Google Apps Script 網頁部署必須含 doGet，可顯示服務狀態。
-function doGet(e) {
-  const p = (e && e.parameter) || {};
-  // 只以隨機識別碼核對送出結果，不透過公開網址揭露學員資料。
-  if (p.receipt && p.callback === 'workshopReceipt') {
-    const token = String(p.receipt).slice(0, 100);
-    const found = CacheService.getScriptCache().get('receipt:' + token) === '1';
-    const payload = JSON.stringify({token:token,ok:found}).replace(/</g,'\\u003c');
-    return ContentService.createTextOutput('window.workshopReceipt(' + payload + ');')
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-  return HtmlService.createHtmlOutput('企業家經營班分組回覆服務已啟用。');
+  Logger.log('後台試算表：' + sheet.getParent().getUrl());
 }
 
 function testWorkshopBackend() {
   const sheet = getSheet_();
-  const spreadsheet = sheet.getParent();
-  Logger.log('後台已連線：' + spreadsheet.getUrl());
-  Logger.log('工作表：' + sheet.getName());
-  Logger.log('目前資料筆數：' + Math.max(0,sheet.getLastRow()-1));
+  Logger.log('連線成功：' + sheet.getParent().getUrl());
+  Logger.log('已收件：' + Math.max(0, sheet.getLastRow() - 1) + ' 筆');
 }
 
-// 使用原生 HTML 表單跨網域 POST，不需使用者登入 Google 表單。
+function doGet(e) {
+  const params = (e && e.parameter) || {};
+  const token = String(params.receipt || '');
+  if (params.callback === 'workshopReceipt' && /^[a-zA-Z0-9._-]{12,100}$/.test(token)) {
+    const sheet = getSheet_();
+    const last = sheet.getLastRow();
+    let found = false;
+    if (last > 1) {
+      found = sheet.getRange(2, 8, last - 1, 1).getValues()
+        .some(row => String(row[0]) === token);
+    }
+    const payload = JSON.stringify({token: token, ok: found});
+    return ContentService.createTextOutput('window.workshopReceipt(' + payload + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return HtmlService.createHtmlOutput('企業家經營班分組系統已啟用。');
+}
+
 function doPost(e) {
   const p = (e && e.parameter) || {};
-  const token = String(p.token || '').slice(0, 100);
+  const token = String(p.token || '');
   try {
     const unit = String(p.unit || '').trim();
     const name = String(p.name || '').trim();
-    const ranks = [p.rank1,p.rank2,p.rank3,p.rank4].map(v => String(v || '').trim());
+    const ranks = [p.rank1, p.rank2, p.rank3, p.rank4]
+      .map(value => String(value || '').trim());
+
     if (!unit || !name || unit.length > 70 || name.length > 70) {
-      throw new Error('請填寫通訊處及姓名。');
+      throw new Error('請先選擇通訊處與處經理。');
     }
-    if (ranks.some(v => !SETTINGS.topics.includes(v)) || new Set(ranks).size !== 4) {
-      throw new Error('請將四個主題排出不重複的第一至第四順位。');
+    if (!/^[a-zA-Z0-9._-]{12,100}$/.test(token)) {
+      throw new Error('送出識別碼無效，請重新整理頁面。');
     }
+    if (ranks.some(value => !CONFIG.topics.includes(value)) ||
+        new Set(ranks).size !== 4) {
+      throw new Error('四個經營主題的順位不得重複。');
+    }
+
     const lock = LockService.getScriptLock();
-    lock.waitLock(15000);
+    lock.waitLock(20000);
     try {
       const sheet = getSheet_();
-      // 同一位學員重複提交，以最後一次填寫的志願為準。
-      let targetRow = sheet.getLastRow() + 1;
-      if (targetRow > 2) {
-        const records = sheet.getRange(2,2,targetRow-2,2).getValues();
-        for (let i=0;i<records.length;i++) {
-          if (String(records[i][0]).trim() === unit &&
-              String(records[i][1]).trim() === name) {
-            targetRow = i + 2;
-            break;
-          }
-        }
+      const last = sheet.getLastRow();
+      let rowIndex = last + 1;
+      if (last > 1) {
+        const current = sheet.getRange(2, 2, last - 1, 2).getValues();
+        const match = current.findIndex(row =>
+          String(row[0]).trim() === unit && String(row[1]).trim() === name
+        );
+        if (match !== -1) rowIndex = match + 2;
       }
-      // 避免 Google 試算表將以 =,+,-,@ 開頭的輸入當成公式。
-      const safeText = value => /^[=+\-@]/.test(value) ? "'" + value : value;
-      sheet.getRange(targetRow,1,1,7).setValues([[
-        new Date(),safeText(unit),safeText(name),...ranks
+      const safe = value => /^[=+@-]/.test(value) ? "'" + value : value;
+      sheet.getRange(rowIndex, 1, 1, 8).setValues([[
+        new Date(), safe(unit), safe(name), ...ranks, token
       ]]);
       SpreadsheetApp.flush();
-      if (token && /^[A-Za-z0-9._-]{8,100}$/.test(token)) {
-        CacheService.getScriptCache().put('receipt:' + token, '1', 600);
-      }
     } finally {
       lock.releaseLock();
     }
-    return respond_(token,true,'已成功送出分組志願。');
-  } catch (err) {
-    return respond_(token,false,err.message || '送出失敗，請稍後再試。');
+    return response_(token, true, '已成功儲存分組志願！');
+  } catch (error) {
+    return response_(token, false, String(error.message || error));
   }
 }
 
-function respond_(token,ok,message) {
-  const data = JSON.stringify({source:'workshop-ranking',token:token,ok:ok,message:message})
-    .replace(/</g,'\\u003c');
+function response_(token, ok, message) {
+  const payload = JSON.stringify({
+    source: 'workshop-ranking', token: token, ok: ok, message: message
+  }).replace(/</g, '\\u003c');
+  const origin = JSON.stringify(CONFIG.origin);
   return HtmlService.createHtmlOutput(
     '<!doctype html><html><body><script>' +
-    'window.parent.postMessage(' + data + ',' + JSON.stringify(SETTINGS.parentOrigin) + ');' +
-    '</script><p>' + (ok ? '填寫完成' : '填寫失敗') + '</p></body></html>'
-  );
+    'window.parent.postMessage(' + payload + ',' + origin + ');' +
+    '</script><p>' + (ok ? '已儲存' : '儲存失敗') + '</p></body></html>'
+  ).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
