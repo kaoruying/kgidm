@@ -265,8 +265,26 @@ sortList.addEventListener('pointerup',e=>{if(e.pointerType!=='touch')finishCardD
 sortList.addEventListener('pointercancel',e=>{if(e.pointerType!=='touch')finishCardDrag();});
 updateRanks();
 const form=document.getElementById('ranking-form'),send=document.getElementById('send');let pending='';
+let receiptInterval=null;
+function stopReceiptCheck(){if(receiptInterval){clearInterval(receiptInterval);receiptInterval=null;}}
+function checkReceipt(){
+ if(!pending)return;
+ const script=document.createElement('script');
+ script.src=form.action+'?callback=workshopReceipt&receipt='+encodeURIComponent(pending)+'&t='+Date.now();
+ script.async=true;
+ script.onload=()=>script.remove();
+ script.onerror=()=>script.remove();
+ document.head.appendChild(script);
+}
+window.workshopReceipt=function(result){
+ if(!pending||!result||result.token!==pending||!result.ok)return;
+ resetSubmission();
+ feedback.textContent='已成功儲存分組志願，感謝填寫！';
+ feedback.className='feedback good';
+};
 let waitTimer=null;
 function resetSubmission(){
+ stopReceiptCheck();
  pending='';
  if(waitTimer!==null){clearTimeout(waitTimer);waitTimer=null;}
  send.disabled=false;send.textContent='確認順位並送出';
@@ -278,6 +296,7 @@ form.addEventListener('submit',e=>{
  pending=Date.now()+'-'+Math.random().toString(36).slice(2);
  document.getElementById('token').value=pending;
  send.disabled=true;send.textContent='送出中…';feedback.textContent='正在儲存分組志願…';feedback.className='feedback';
+ receiptInterval=setInterval(checkReceipt,2500);
  waitTimer=setTimeout(()=>{
   if(!pending)return;
   resetSubmission();
