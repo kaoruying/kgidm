@@ -77,7 +77,7 @@ participants.forEach((person,i)=>{
  participantSelect.appendChild(option);
 });
 participantSelect.addEventListener('change',()=>{
- const p=participants[Number(participantSelect.value)];
+ const p=participantSelect.value===''?null:participants[Number(participantSelect.value)];
  document.getElementById('selected-unit').value=p?p[2]:'';
  document.getElementById('selected-name').value=p?p[3]:'';
 });
