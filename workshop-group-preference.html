@@ -15,6 +15,17 @@ body{margin:0;background:#f4f6fa;color:#173150;font-family:"Noto Sans TC","PingF
 h2{font-size:20px;margin:0 0 13px}
 .hint{font-size:15px;line-height:1.75;color:#51647b;margin:0 0 17px}
 .sort-list{display:flex;flex-direction:column;gap:12px}
+.rank-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:19px}
+.rank-actions button{min-height:50px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer}
+.rank-confirm{background:#173b69;color:#fff;border:1px solid #173b69}
+.rank-edit{background:#fff;color:#173b69;border:1px solid #9db4d0}
+.rank-actions button:disabled{opacity:.42;cursor:not-allowed}
+.rank-lock-note{font-size:14px;color:#59718b;margin:10px 0 0;line-height:1.65}
+.sort-list.is-locked .sort-card{cursor:default;touch-action:pan-y;filter:grayscale(1);opacity:.7;border-color:#ced3da;background:#e8ebef}
+.sort-list.is-locked .sort-rank{background:#7c8795}
+.sort-list.is-locked .sort-arrows button{display:none}
+.sort-list.is-locked .sort-desc{color:#66717e}
+
 .sort-card{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;display:grid;grid-template-columns:85px minmax(0,1fr) 39px;align-items:center;gap:14px;min-height:96px;padding:12px;border:2px solid var(--tone-border);border-radius:15px;background:var(--tone-bg);touch-action:none;cursor:grab;position:relative}
 .sort-card[data-theme="0"]{--tone-bg:#ecf5fc;--tone-border:#c4deef;--tone-accent:#367ca4}
 .sort-card[data-theme="1"]{--tone-bg:#fff5e7;--tone-border:#efd8b3;--tone-accent:#b17d2f}
@@ -56,12 +67,17 @@ body.is-sorting .sort-card:not(.dragging){opacity:.8;filter:saturate(.86)}
 </style></head><body>
 <main class="shell">
 <div class="brand"><span class="logo">K</span>凱基人壽｜企業家經營班</div>
-<section class="hero"><div class="eyebrow">10/30 WORKSHOP</div><h1>工作坊分組志願調查</h1><p>工作坊仍以七週策略執行成果分享為主。請依最希望強化的經營主題，排出第一至第四順位。</p></section>
+<section class="hero"><div class="eyebrow">10/30 WORKSHOP</div><h1>工作坊分組志願調查</h1></section>
 <section class="panel">
 <h2>分組四大經營主題</h2>
-<p class="hint">10/30 工作坊仍以七週策略執行成果分享為核心。為讓每位處經理獲得更符合通訊處經營需求的實務回饋，本次依四大經營主題分組。請依您最希望強化的能力，將主題由上至下排出第一至第四志願；每組限9人，主辦單位將參考志願順位安排。</p>
+<p class="hint">工作坊以七週策略執行成果分享為主，依四大經營主題分組，提供不同角度的實務回饋。請依最希望強化的主題排出志願順位。</p>
 <p class="hint" style="font-weight:750;color:#173b69">直接拖動彩色主題卡片，即可調整順位。</p>
 <div id="sort-list" class="sort-list" aria-label="工作坊四大主題志願順序"></div>
+<div class="rank-actions">
+<button type="button" id="confirm-ranks" class="rank-confirm">確認順序</button>
+<button type="button" id="edit-ranks" class="rank-edit" disabled>編輯順序</button>
+</div>
+<p id="rank-lock-note" class="rank-lock-note" aria-live="polite">完成排序後，請點選「確認順序」。</p>
 <p class="sort-status" id="sort-status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">順位可調整。</p>
 </section>
 <form id="ranking-form" method="POST" target="submit-frame" action="https://script.google.com/macros/s/AKfycbxdAc-ydOfYxY6n_DQezAgxA3tLx7tkdVipwotLjo-2t2A8RbUbrINpYdfo5mKNs0gjXw/exec">
@@ -128,6 +144,26 @@ const sortList=document.getElementById('sort-list');
 const status=document.getElementById('sort-status');
 const hidden=document.getElementById('hidden-ranks');
 const feedback=document.getElementById('feedback');
+let ranksLocked=false;
+const confirmButton=document.getElementById('confirm-ranks');
+const editButton=document.getElementById('edit-ranks');
+const rankLockNote=document.getElementById('rank-lock-note');
+function setRankLock(locked){
+ ranksLocked=locked;
+ sortList.classList.toggle('is-locked',locked);
+ confirmButton.disabled=locked;
+ editButton.disabled=!locked;
+ rankLockNote.textContent=locked
+  ? '已確認並鎖定志願順序。若要調整，請按「編輯順序」。'
+  : '完成排序後，請點選「確認順序」。';
+}
+confirmButton.addEventListener('click',()=>{
+ if(drag)return;
+ updateRanks();
+ setRankLock(true);
+});
+editButton.addEventListener('click',()=>setRankLock(false));
+
 for(let i=1;i<=4;i++){
  const input=document.createElement('input');
  input.type='hidden';input.name='rank'+i;input.id='rank'+i;
@@ -161,7 +197,7 @@ themes.forEach((theme,i)=>{
  arrows.append(up,down);content.append(arrows);card.append(badge,content,handle);sortList.append(card);
 });
 sortList.addEventListener('click',e=>{
- const b=e.target.closest('.up,.down');if(!b)return;
+ const b=e.target.closest('.up,.down');if(!b||ranksLocked)return;
  const card=b.closest('.sort-card');
  const all=cards(),i=all.indexOf(card);
  if(b.classList.contains('up')&&i>0)sortList.insertBefore(card,all[i-1]);
@@ -202,7 +238,7 @@ function scrollWhileDragging() {
  autoScrollFrame=requestAnimationFrame(scrollWhileDragging);
 }
 function startCardDrag(card,e) {
- if(drag)return;
+ if(drag||ranksLocked)return;
  const rect=card.getBoundingClientRect();
  const ghost=card.cloneNode(true);
  ghost.classList.add('floating');
@@ -230,7 +266,7 @@ function finishCardDrag(e) {
 sortList.addEventListener('contextmenu',e=>{if(e.target.closest('.sort-card'))e.preventDefault();});
 sortList.addEventListener('selectstart',e=>{if(e.target.closest('.sort-card'))e.preventDefault();});
 sortList.addEventListener('pointerdown',e=>{
- if(e.button!==0||e.target.closest('button'))return;
+ if(ranksLocked||e.button!==0||e.target.closest('button'))return;
  const card=e.target.closest('.sort-card');
  if(!card)return;
  e.preventDefault();
@@ -274,6 +310,7 @@ function resetSubmission(){
 }
 form.addEventListener('submit',e=>{
  if(!regionSelect.value||!participantSelect.value){e.preventDefault();feedback.textContent='請先選擇區域中心與單位＋姓名。';feedback.className='feedback error';return;}
+ if(!ranksLocked){e.preventDefault();feedback.textContent='請先點選「確認順序」，再送出分組志願。';feedback.className='feedback error';sortList.scrollIntoView({behavior:'smooth',block:'center'});return;}
  if(cards().length!==4){e.preventDefault();feedback.textContent='主題排序尚未完成。';feedback.className='feedback error';return;}
  if(pending){e.preventDefault();return;}
  pending=Date.now()+'-'+Math.random().toString(36).slice(2);
