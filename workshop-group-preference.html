@@ -255,14 +255,21 @@ sortList.addEventListener('lostpointercapture',e=>{
 updateRanks();
 const form=document.getElementById('ranking-form'),send=document.getElementById('send');let pending='';
 let receiptInterval=null;
-function stopReceiptCheck(){if(receiptInterval){clearInterval(receiptInterval);receiptInterval=null;}}
+let receiptStart=null;
+let receiptRequesting=false;
+function stopReceiptCheck(){
+ if(receiptInterval){clearInterval(receiptInterval);receiptInterval=null;}
+ if(receiptStart){clearTimeout(receiptStart);receiptStart=null;}
+ receiptRequesting=false;
+}
 function checkReceipt(){
- if(!pending)return;
+ if(!pending||receiptRequesting)return;
+ receiptRequesting=true;
  const script=document.createElement('script');
  script.src=form.action+'?callback=workshopReceipt&receipt='+encodeURIComponent(pending)+'&t='+Date.now();
  script.async=true;
- script.onload=()=>script.remove();
- script.onerror=()=>script.remove();
+ script.onload=()=>{receiptRequesting=false;script.remove();};
+ script.onerror=()=>{receiptRequesting=false;script.remove();};
  document.head.appendChild(script);
 }
 window.workshopReceipt=function(result){
@@ -284,8 +291,9 @@ form.addEventListener('submit',e=>{
  if(pending){e.preventDefault();return;}
  pending=Date.now()+'-'+Math.random().toString(36).slice(2);
  document.getElementById('token').value=pending;
- send.disabled=true;send.textContent='送出中…';feedback.textContent='正在儲存分組志願…';feedback.className='feedback';
- receiptInterval=setInterval(checkReceipt,2500);
+ send.disabled=true;send.textContent='送出中…';feedback.textContent='資料已送出，正在確認後台儲存結果…';feedback.className='feedback';
+ receiptStart=setTimeout(checkReceipt,900);
+ receiptInterval=setInterval(checkReceipt,1500);
  waitTimer=setTimeout(()=>{
   if(!pending)return;
   resetSubmission();
