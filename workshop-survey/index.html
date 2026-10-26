@@ -18,7 +18,7 @@ const rosterByRegion={
       ['彩榮','梁麗琴'],['宏慶','陳澤坤'],['韋誠','沈鳳英'],['順誠','張婄吟']]
   };
 const form=document.getElementById('survey'),status=document.getElementById('status');
-const qs=['本次工作坊整體滿意程度？','本次工作坊的個案分享、同儕交流及引導師回饋，對您在通訊處經營上的幫助程度？'];
+const qs=['本次工作坊整體滿意程度？','本次工作坊的個案分享、同儕交流及與談者回饋，對您在通訊處經營上的幫助程度？'];
 document.getElementById('ratingQuestions').innerHTML=qs.map((q,i)=>'<div class="question"><label id="q'+i+'">'+(i+1)+'. '+q+' <span class="required">*</span></label><div class="scale" role="group" aria-labelledby="q'+i+'">'+[5,4,3,2,1].map(n=>'<input required type="radio" name="rating'+i+'" id="r'+i+'-'+n+'" value="'+n+'"><label for="r'+i+'-'+n+'">'+n+'</label>').join('')+'</div><div class="reason" id="reason'+i+'" hidden><label for="reasonText'+i+'">請簡單說明評分原因 <span class="required">*</span></label><textarea id="reasonText'+i+'" name="reason'+i+'" placeholder="請分享原因，協助我們持續改善……"></textarea></div></div>').join('');
 const center=document.getElementById('center'),participant=document.getElementById('participant'),unit=document.getElementById('unit'),name=document.getElementById('name');
 center.addEventListener('change',()=>{participant.innerHTML='<option value="">請選擇通訊處／姓名</option>';unit.value='';name.value='';const list=rosterByRegion[center.value]||[];participant.disabled=!list.length;list.forEach(([u,n],i)=>participant.add(new Option(u+'｜'+n,String(i))))});
