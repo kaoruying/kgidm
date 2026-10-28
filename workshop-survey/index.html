@@ -24,7 +24,7 @@ const center=document.getElementById('center'),participant=document.getElementBy
 center.addEventListener('change',()=>{participant.innerHTML='<option value="">請選擇通訊處／姓名</option>';unit.value='';name.value='';const list=rosterByRegion[center.value]||[];participant.disabled=!list.length;list.forEach(([u,n],i)=>participant.add(new Option(u+'｜'+n,String(i))))});
 participant.addEventListener('change',()=>{const row=(rosterByRegion[center.value]||[])[Number(participant.value)];if(participant.value!==''&&row){unit.value=row[0];name.value=row[1]}else{unit.value='';name.value=''}});
 document.querySelectorAll('.scale').forEach((el,i)=>el.addEventListener('change',()=>{const n=Number(new FormData(form).get('rating'+i));const area=document.getElementById('reason'+i);area.hidden=n>6;area.querySelector('textarea').required=n<=6}));
-const ENDPOINT='https://script.google.com/macros/s/AKfycbywGgQ9YciL_wKtiRXowwuDhaebfQMm10SMio3ViGd8Bk8fbW_i7SOGqlgBRnfc3DbPTA/exec';
+const ENDPOINT='https://script.google.com/macros/s/AKfycbxMH5PWKMKXqorLXRZoexf0YXFwoZcyx1Df4lqJ173CbD9Vi27WZKbcO5tnfFYDFQjcuw/exec';
 form.addEventListener('submit',async e=>{
   e.preventDefault();
   if(!form.reportValidity())return;
