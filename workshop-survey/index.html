@@ -39,7 +39,7 @@ form.addEventListener('submit',async e=>{
       headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
       body:data.toString()
     });
-    form.parentElement.innerHTML='<div style="text-align:center;padding:40px 10px"><h2>問卷資料已送出</h2></div>';
+    form.parentElement.innerHTML='<div style="text-align:center;padding:40px 10px"><h2>問卷資料已送出</h2><p>感謝您的寶貴回饋，期待下次繼續交流共學！我們 12/03 工作坊見。</p></div>';
   }catch(err){
     status.textContent='目前無法傳送，請確認網路連線後再試一次。';
     btn.disabled=false;
