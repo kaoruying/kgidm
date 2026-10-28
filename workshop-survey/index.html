@@ -39,7 +39,7 @@ form.addEventListener('submit',async e=>{
       headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
       body:data.toString()
     });
-    form.innerHTML='<div style="text-align:center;padding:40px 10px"><h2>問卷資料已傳送</h2><p>目前無法從網頁確認後台是否成功寫入，請先由承辦人確認 Google 試算表收件狀況。</p></div>';
+    form.parentElement.innerHTML='<div style="text-align:center;padding:40px 10px"><h2>問卷資料已送出</h2></div>';
   }catch(err){
     status.textContent='目前無法傳送，請確認網路連線後再試一次。';
     btn.disabled=false;
