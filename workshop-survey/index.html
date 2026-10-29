@@ -31,25 +31,40 @@ form.addEventListener('submit',async e=>{
   const btn=form.querySelector('[type=submit]');
   btn.disabled=true;
   status.textContent='資料傳送中，請稍候…';
-  try{
-    const data=new URLSearchParams(new FormData(form));
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),20000);
-    try{
-      await fetch(ENDPOINT,{
-        method:'POST',
-        mode:'no-cors',
-        headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
-        body:data.toString(),
-        signal:controller.signal
-      });
-    }finally{
-      clearTimeout(timeout);
-    }
+  const data=new URLSearchParams(new FormData(form));
+  const complete=()=>{
     form.parentElement.innerHTML='<div style="text-align:center;padding:40px 10px"><h2>問卷資料已送出</h2><p style="text-align:center;line-height:1.9">感謝您的寶貴回饋，<br>期待下次繼續交流共學！<br>我們 12/03 工作坊見。</p></div>';
-  }catch(err){
-    status.textContent=err.name==='AbortError'?'傳送等候逾時，資料可能已寫入。請先確認 Google 試算表是否收到這筆紀錄，再決定是否重新送出，以免重複。':'傳送發生問題，資料可能已寫入。請先確認 Google 試算表收件狀況，再決定是否重新送出。';
+  };
+  // Apps Script 的 no-cors 回應無法讀取；以短時間等待避免手機端無限轉圈。
+  let settled=false;
+  const pending=fetch(ENDPOINT,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+    body:data.toString(),
+    keepalive:true
+  }).then(()=>{settled=true;return 'sent'},()=>{settled=true;return 'error'});
+  const result=await Promise.race([
+    pending,
+    new Promise(resolve=>setTimeout(()=>resolve('pending'),5000))
+  ]);
+  if(result==='error'){
+    status.textContent='目前無法完成傳送，請確認網路連線後再試一次。';
     btn.disabled=false;
+  }else{
+    // pending 表示瀏覽器仍等待回應，不能以此判定後台已寫入。
+    // 保留表單直到真正的 fetch 完成，避免誤報送出成功。
+    if(result==='sent')complete();
+    else{
+      status.textContent='資料已送往接收端，但尚未收到完成訊號。請稍候，勿重複送出。';
+      pending.then(outcome=>{
+        if(outcome==='sent')complete();
+        else{
+          status.textContent='傳送未完成，請確認網路連線後再試一次。';
+          btn.disabled=false;
+        }
+      });
+    }
   }
 });
 </script></body></html>
