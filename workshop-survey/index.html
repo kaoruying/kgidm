@@ -25,46 +25,31 @@ center.addEventListener('change',()=>{participant.innerHTML='<option value="">�
 participant.addEventListener('change',()=>{const row=(rosterByRegion[center.value]||[])[Number(participant.value)];if(participant.value!==''&&row){unit.value=row[0];name.value=row[1]}else{unit.value='';name.value=''}});
 document.querySelectorAll('.scale').forEach((el,i)=>el.addEventListener('change',()=>{const n=Number(new FormData(form).get('rating'+i));const area=document.getElementById('reason'+i);area.hidden=n>6;area.querySelector('textarea').required=n<=6}));
 const ENDPOINT='https://script.google.com/macros/s/AKfycbw6Omoy3V6V-QCM52i0tB7kRsRI1M_eYIQHSLOriLk4DmJ1z_LOL2MPB4o9K4uN8CdTag/exec';
-form.addEventListener('submit',async e=>{
+form.addEventListener('submit',e=>{
   e.preventDefault();
   if(!form.reportValidity())return;
   const btn=form.querySelector('[type=submit]');
   btn.disabled=true;
   status.textContent='資料傳送中，請稍候…';
   const data=new URLSearchParams(new FormData(form));
-  const complete=()=>{
-    form.parentElement.innerHTML='<div style="text-align:center;padding:40px 10px"><h2>問卷資料已送出</h2><p style="text-align:center;line-height:1.9">感謝您的寶貴回饋，<br>期待下次繼續交流共學！<br>我們 12/03 工作坊見。</p></div>';
-  };
-  // Apps Script 的 no-cors 回應無法讀取；以短時間等待避免手機端無限轉圈。
-  let settled=false;
-  const pending=fetch(ENDPOINT,{
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
-    body:data.toString(),
-    keepalive:true
-  }).then(()=>{settled=true;return 'sent'},()=>{settled=true;return 'error'});
-  const result=await Promise.race([
-    pending,
-    new Promise(resolve=>setTimeout(()=>resolve('pending'),5000))
-  ]);
-  if(result==='error'){
-    status.textContent='目前無法完成傳送，請確認網路連線後再試一次。';
-    btn.disabled=false;
-  }else{
-    // pending 表示瀏覽器仍等待回應，不能以此判定後台已寫入。
-    // 保留表單直到真正的 fetch 完成，避免誤報送出成功。
-    if(result==='sent')complete();
-    else{
-      status.textContent='資料已送往接收端，但尚未收到完成訊號。請稍候，勿重複送出。';
-      pending.then(outcome=>{
-        if(outcome==='sent')complete();
-        else{
-          status.textContent='傳送未完成，請確認網路連線後再試一次。';
-          btn.disabled=false;
-        }
-      });
+  // 使用不等待跨網域回應的傳送方式，避免 iPhone Safari 卡在 pending。
+  // 這只能確認瀏覽器已發起傳送，不能直接驗證試算表寫入。
+  try{
+    const payload=new Blob([data.toString()],{type:'application/x-www-form-urlencoded;charset=UTF-8'});
+    const queued=navigator.sendBeacon&&navigator.sendBeacon(ENDPOINT,payload);
+    if(!queued){
+      fetch(ENDPOINT,{
+        method:'POST',
+        mode:'no-cors',
+        headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+        body:data.toString(),
+        keepalive:true
+      }).catch(()=>{});
     }
+    form.parentElement.innerHTML='<div style="text-align:center;padding:40px 10px"><h2>問卷資料已送出</h2><p style="text-align:center;line-height:1.9">感謝您的寶貴回饋，<br>期待下次繼續交流共學！<br>我們 12/03 工作坊見。</p></div>';
+  }catch(err){
+    status.textContent='無法啟動傳送，請確認網路連線後再試一次。';
+    btn.disabled=false;
   }
 });
 </script></body></html>
