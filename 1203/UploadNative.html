@@ -148,7 +148,7 @@ async function server(name,...args){
    await fetch(API_URL,{method:'POST',mode:'no-cors',credentials:'omit',body,redirect:'follow'});
  }catch(err){throw Error('網路傳送未完成，請先確認網路連線；不要反覆點擊上傳')}
  let connectionErrors=0;
- for(let i=0;i<40;i++){
+ for(let i=0;i<20;i++){
    await delay(i===0?1100:1200);
    let result;
    try{result=await receiptQuery(receipt);connectionErrors=0}
@@ -156,7 +156,7 @@ async function server(name,...args){
    if(result&&result.status==='ok')return {ok:true,id:result.id};
    if(result&&result.status==='error')throw Error(result.message||'照片上傳失敗');
  }
- throw Error('照片已送出，但尚未確認儲存完成。請管理者先查看後台，避免重複上傳。');
+ throw Error('照片傳送後約25秒仍未收到 Google Drive 確認。可能是 Google Apps Script 沒有執行 POST 或收據查詢失敗。請先檢查管理後台及 Apps Script 執行紀錄，避免重複上傳。');
 }
 function errText(e){return String(e && e.message || e || '發生錯誤')}
 
@@ -402,21 +402,28 @@ function initUpload(){
    const selected=EMBEDDED_ROSTER.find(r=>r.key===person.value);
    if(!selected||busy||processing||!remaining().length)return;
    busy=true;validate();
-   const todo=remaining();let count=0;
+   const todo=remaining();let count=0,uploadedCount=0;
+   submit.textContent='正在傳送，請勿重複點擊';
    try{
      for(const p of todo){
-       count++;status.textContent=`正在上傳第 ${count}／${todo.length} 張…`;
+       count++;
+       status.textContent=`第 ${count}／${todo.length} 張：準備照片中…`;
        if(!p.photo)await prepareOne(p);
-       // 沒有「完成裁切」這個強制步驟：直接上傳目前選定的裁切框。
+       status.textContent=`第 ${count}／${todo.length} 張：照片已送出，正在確認 Google Drive 儲存結果…`;
+       // 上傳成功一定要收到後端收據，不能只因網路請求結束就宣稱成功。
        await server('uploadCard',{region:selected.region,office:selected.office,name:selected.name,image:p.photo});
+       uploadedCount++;
        p.uploaded=true;
        // 釋放記憶體，避免一次選很多圖片造成手機瀏覽器卡住。
        p.source=null;p.photo='';
      }
      el('uploadFormArea').classList.add('hidden');el('uploadDone').classList.remove('hidden');
      el('uploadDone').scrollIntoView({behavior:'smooth',block:'center'});
-   }catch(e){status.textContent=`已上傳 ${count-1} 張，尚有 ${remaining().length} 張未完成：${errText(e)}`;updateBatch()}
-   finally{busy=false;validate()}
+   }catch(e){
+     status.textContent=`已確認成功 ${uploadedCount} 張，仍有 ${remaining().length} 張未確認。原因：${errText(e)}。若有顯示等待過久，請先由主辦單位檢查後台是否已有照片，再決定是否重新送出。`;
+     updateBatch();
+   }
+   finally{busy=false;submit.textContent='確認上傳';validate()}
  };
 }
 
