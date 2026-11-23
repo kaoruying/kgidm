@@ -1,3 +1,3 @@
-// 完成 Google Apps Script 部署後，填入你的 /exec 網址。
-// 未設定之前：前台僅提供動畫示範，學員上傳及刪除功能暫停，避免誤以為已寫入 Google Drive。
-window.KGI_GAS_URL = "";
+// 企業家經營班 12/3 經營決策卡：Google Apps Script 正式後端網址
+// GitHub Pages 的投影、學員上傳、管理頁會分別導向 /exec?page=display、upload、admin。
+window.KGI_GAS_URL = "https://script.google.com/macros/s/AKfycbzgFh_4L5M3Mto-JhTeCwoyX4Q1Fc93mtiTeLMZRcddIRPI2W5a2vnW9NejIxyjBy__/exec";
