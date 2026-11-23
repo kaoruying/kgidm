@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>下一局，由我定義</title>
+<style>
+:root{--navy:#0b2149;--navy2:#183866;--gold:#eec990;--orange:#f69b31;--text:#183052;--muted:#65718a;--line:#dfdfdf}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+.hidden{display:none!important}.screen{display:none}
+body[data-page="upload"]{background:linear-gradient(165deg,#fdfbf6 0%,#f4f0e9 100%);color:var(--text)}
+body[data-page="admin"]{background:#f5f6fa;color:var(--text)}
+body[data-page="display"]{overflow:hidden;background:#09162e;color:#fff;height:100vh}
+body[data-page="upload"] #uploadPage,body[data-page="display"] #displayPage,body[data-page="admin"] #adminPage{display:block}
+/* 學員：只保留最必要操作 */
+.uploadShell{width:min(460px,100%);margin:0 auto;padding:clamp(22px,5vw,44px) 22px 48px}
+.uploadBrand{text-align:center;color:#25436a;font-size:13px;letter-spacing:.23em;font-weight:650}
+.uploadTitle{display:block;margin:22px auto 18px;width:91%;max-width:360px;height:auto}
+.uploadPanel{background:#fff;border:1px solid #ede6d9;border-radius:22px;padding:25px 21px 24px;box-shadow:0 16px 48px rgba(18,40,75,.08)}
+.uploadHeading{font-size:21px;font-weight:800;text-align:center;letter-spacing:.05em;margin:0 0 25px}
+.field{margin:0 0 18px}.field label{display:block;font-size:13px;font-weight:700;color:#526078;margin-bottom:8px}
+select{width:100%;height:51px;background:#fff;border:1px solid #d8dce4;border-radius:11px;padding:0 36px 0 13px;color:#213654;font-size:16px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%236d7c91' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}select:disabled{background-color:#f2f2f2;color:#a5a7ac}
+.pickGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:23px}.pickBtn{border:1px solid #d7dce7;border-radius:12px;padding:16px 5px;background:#f8fafc;color:#1e365c;font-size:15px;font-weight:700}.pickBtn strong{display:block;font-size:22px;margin-bottom:3px;font-weight:500}.pickBtn:hover{border-color:#a4b4d2;background:#eff4fa}.pickBtn:focus-visible,.primary:focus-visible{outline:3px solid #ffb14a;outline-offset:3px}
+#cameraInput,#albumInput{display:none}.previewBox{margin-top:16px;display:none;text-align:center}.previewBox img{display:block;width:100%;max-height:310px;object-fit:contain;background:#faf6ef;border-radius:12px;border:1px solid #e7dcc9;padding:4px}
+.primary{width:100%;border:0;border-radius:13px;color:#fff;background:linear-gradient(100deg,#1b3f76,#0d2855);padding:15px;font-size:16px;font-weight:800;letter-spacing:.12em;margin-top:16px;box-shadow:0 7px 20px rgba(16,43,91,.18)}.primary:disabled{background:#aab2bf;box-shadow:none;cursor:default}.status{text-align:center;color:#9b6225;font-size:13px;min-height:19px;margin-top:12px}.done{text-align:center;padding:22px 0 13px}.doneIcon{font-size:50px;color:#20835d}.done h2{font-size:23px;margin:12px 0}.done p{font-size:14px;color:var(--muted)}.miniBtn{border:1px solid #bec9d9;background:#fff;color:#1b3762;border-radius:10px;padding:11px 19px;font-weight:700;margin-top:16px}
+/* 大螢幕：預設完全不露出進度及操作資訊 */
+.stage{position:fixed;inset:0;overflow:hidden;background:radial-gradient(ellipse at 74% 48%,rgba(252,202,148,.65) 0%,rgba(253,201,146,.09) 22%,transparent 58%),linear-gradient(180deg,#07152f 0%,#172b52 36%,#596582 70%,#142b4d 100%)}
+.stageSky{position:absolute;inset:0;background:radial-gradient(ellipse 36% 18% at 75% 60%,rgba(255,230,190,.50),transparent 90%)}
+.stageMountains{position:absolute;width:100%;height:100%;inset:0;opacity:.72}.stageMist{position:absolute;left:0;right:0;bottom:0;height:33%;background:linear-gradient(0deg,#0a1c3a 3%,rgba(18,49,90,.80) 52%,transparent)}
+.stageTop{position:absolute;top:3.2%;left:auto;right:3.5%;z-index:5;text-align:right;white-space:nowrap;color:#fcf4e6;font-size:clamp(13px,1.13vw,23px);font-weight:650;letter-spacing:.35em;text-shadow:0 3px 16px rgba(6,12,34,.3)}
+.stageTitle{position:absolute;top:6%;left:3%;z-index:5;width:min(39vw,560px);max-height:21%;object-fit:contain;object-position:left center;filter:drop-shadow(0 5px 15px rgba(4,15,38,.35))}
+.stageCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:3;display:block}
+.stageBottom{position:absolute;bottom:3%;left:15%;right:15%;z-index:4;text-align:center;color:#fff2d7;font-size:clamp(12px,1.15vw,21px);letter-spacing:.27em;text-shadow:0 2px 10px #0b204a;pointer-events:none}
+.stageBlank{position:absolute;left:25%;right:25%;top:52%;text-align:center;transform:translateY(-50%);color:#f6eddd;font-size:clamp(16px,1.35vw,24px);letter-spacing:.25em;z-index:2;transition:opacity .4s}
+.stageTools{position:absolute;right:13px;bottom:12px;z-index:9;opacity:.025;transition:opacity .2s;display:flex;gap:7px}.stageTools:hover,.stageTools:focus-within{opacity:1}.stageTools button{background:rgba(7,26,57,.8);border:1px solid #a6a8ac80;color:#fff;border-radius:20px;padding:8px 11px;font-size:12px}
+/* 管理頁 */
+.adminShell{max-width:960px;margin:0 auto;padding:24px 18px 60px}.adminHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 20px}.adminHead h1{font-size:23px;margin:0}.adminHead small{color:#7b8495}.adminCard{background:#fff;border:1px solid #e0e5ef;border-radius:17px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(22,43,85,.04)}.adminCard h2{margin:0 0 14px;font-size:17px}.pinRow{display:flex;gap:10px;align-items:center}.pinRow input{flex:1;min-width:0;border:1px solid #d4dbe6;border-radius:10px;padding:12px}.plainBtn{padding:11px 18px;border:0;background:#14386f;color:#fff;border-radius:10px}.miniLink{display:inline-block;max-width:100%;overflow-wrap:anywhere;color:#1d4f96;text-decoration:underline;font-size:13px}.qr{width:164px;height:164px;object-fit:contain;border:1px solid #e7e9ef;border-radius:8px;padding:6px;background:#fff}.linksGrid{display:flex;gap:19px;align-items:flex-start;flex-wrap:wrap}.linksGrid div{flex:1;min-width:240px}.adminRows{display:grid;gap:10px}.adminRow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px;border:1px solid #e8ebf1;border-radius:11px;background:#fff}.adminRow .name{font-weight:800;font-size:14px}.adminRow .meta{font-size:12px;color:#6e788b;margin-top:3px}.adminRow button{border:1px solid #cc7c78;color:#a23a33;padding:8px 11px;border-radius:9px;background:#fff;white-space:nowrap;font-size:13px}.adminRow.isDeleted{opacity:.5}.adminRow.isDeleted button{display:none}.adminThumb{width:85px;max-height:62px;object-fit:contain;background:#f3f0ec;border-radius:6px;border:1px solid #eee}.adminItemL{display:flex;gap:10px;align-items:center;min-width:0}.adminRow .meta{overflow-wrap:anywhere}.adminEmpty{color:#64718c;font-size:14px;padding:20px 0}.adminNote{font-size:12px;color:#7b8495;margin-top:12px}
+@media(min-width:640px){.uploadShell{padding-top:60px}}
+</style>
+
+<script src="./config.js"></script>
+<script>
+(function(){
+  var u = (window.KGI_GAS_URL || "").trim().replace(/\/$/, "");
+  if (/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u)) {
+    window.location.replace(u + "?page=admin");
+  } else {}
+})();
+</script>
+</head>
+<body data-page="admin">
+<div class="screen" id="adminPage">
+  <div class="adminShell">
+    <div class="adminHead"><div><h1>決策卡管理</h1><small>凱基人壽 企業家經營班</small></div><button class="plainBtn" id="adminRefresh">重新整理</button></div>
+    <div class="adminCard" id="adminLogin"><h2>管理者登入</h2><div class="pinRow"><input id="adminPin" type="password" autocomplete="off" placeholder="輸入管理密碼"><button class="plainBtn" id="adminGo">進入</button></div><div id="adminLoginError" class="status"></div></div>
+    <div id="adminInside" class="hidden">
+      <div class="adminCard"><h2>活動網址與 QR Code</h2><div class="linksGrid"><div><div>學員上傳網址</div><a class="miniLink" target="_blank" rel="noopener" id="uploadLink"></a><p><div>投影網址</div><a class="miniLink" target="_blank" rel="noopener" id="displayLink"></a></p><div class="adminNote">把學員上傳 QR Code 放在活動投影片即可。右側 QR Code 需網路連線載入。</div></div><img id="qrImage" class="qr" alt="學員上傳 QR Code"></div></div>
+      <div class="adminCard"><h2>已收到的決策卡</h2><div id="adminRows" class="adminRows"><div class="adminEmpty">載入中</div></div></div>
+    </div>
+  </div>
+</div>
+<script>
+(()=>{
+'use strict';
+const EMBEDDED_ROSTER = [{"region":"北一","office":"金彥","name":"鄧睿宸","key":"北一__金彥__鄧睿宸"},{"region":"北一","office":"鴻海","name":"林錦鴻","key":"北一__鴻海__林錦鴻"},{"region":"北一","office":"非凡","name":"曾淑珍","key":"北一__非凡__曾淑珍"},{"region":"北一","office":"創建","name":"譚淑鋆","key":"北一__創建__譚淑鋆"},{"region":"北一","office":"毅品","name":"張雅如","key":"北一__毅品__張雅如"},{"region":"北一","office":"越鋒","name":"林采娥","key":"北一__越鋒__林采娥"},{"region":"北二","office":"駿廷","name":"程廷鈞","key":"北二__駿廷__程廷鈞"},{"region":"北二","office":"昊陽","name":"林浩筠","key":"北二__昊陽__林浩筠"},{"region":"北二","office":"众山","name":"呂敏淑","key":"北二__众山__呂敏淑"},{"region":"北二","office":"駿鋮","name":"林宥成","key":"北二__駿鋮__林宥成"},{"region":"北二","office":"東山","name":"曾孝媛","key":"北二__東山__曾孝媛"},{"region":"北二","office":"展毓","name":"嚴毓棟","key":"北二__展毓__嚴毓棟"},{"region":"北二","office":"崧峰","name":"張啓峯","key":"北二__崧峰__張啓峯"},{"region":"北二","office":"雙贏","name":"許凱婷","key":"北二__雙贏__許凱婷"},{"region":"桃竹","office":"金峰","name":"呂秋蓉","key":"桃竹__金峰__呂秋蓉"},{"region":"桃竹","office":"虹燁","name":"許雅虹","key":"桃竹__虹燁__許雅虹"},{"region":"桃竹","office":"躍昇","name":"許又臻","key":"桃竹__躍昇__許又臻"},{"region":"桃竹","office":"皇城","name":"孫國城","key":"桃竹__皇城__孫國城"},{"region":"桃竹","office":"瑞峰","name":"蕭莉婷","key":"桃竹__瑞峰__蕭莉婷"},{"region":"桃竹","office":"瑞至","name":"黃欣至","key":"桃竹__瑞至__黃欣至"},{"region":"桃竹","office":"亞威","name":"周淑娥","key":"桃竹__亞威__周淑娥"},{"region":"桃竹","office":"新竹直轄","name":"沈秋吟","key":"桃竹__新竹直轄__沈秋吟"},{"region":"中嘉","office":"嘉銓","name":"楊嘉麗","key":"中嘉__嘉銓__楊嘉麗"},{"region":"中嘉","office":"禾順","name":"陳尹婷","key":"中嘉__禾順__陳尹婷"},{"region":"中嘉","office":"福鵬直轄","name":"黃傑揚","key":"中嘉__福鵬直轄__黃傑揚"},{"region":"中嘉","office":"菁業","name":"陳菁亮","key":"中嘉__菁業__陳菁亮"},{"region":"中嘉","office":"保富","name":"呂敏忠","key":"中嘉__保富__呂敏忠"},{"region":"中嘉","office":"上慶","name":"邱慧娟","key":"中嘉__上慶__邱慧娟"},{"region":"台南","office":"金美","name":"樊光美","key":"台南__金美__樊光美"},{"region":"台南","office":"立捷","name":"蘇雅俐","key":"台南__立捷__蘇雅俐"},{"region":"台南","office":"金達","name":"洪淑娟","key":"台南__金達__洪淑娟"},{"region":"台南","office":"松慶","name":"廖樹松","key":"台南__松慶__廖樹松"},{"region":"高屏","office":"韋誠","name":"沈鳳英","key":"高屏__韋誠__沈鳳英"},{"region":"高屏","office":"順誠","name":"張婄吟","key":"高屏__順誠__張婄吟"},{"region":"高屏","office":"宏慶","name":"陳澤坤","key":"高屏__宏慶__陳澤坤"},{"region":"高屏","office":"彩榮","name":"梁麗琴","key":"高屏__彩榮__梁麗琴"}];
+const BASE_URL = "";
+const DEMO = !(window.google && google.script && google.script.run);
+const PAGE = DEMO ? (new URLSearchParams(location.search).get('page') || document.body.dataset.page || 'display') : document.body.dataset.page;
+const demoKey='kgi1203_formal_demo_v1';let demoMemory=[];
+document.body.dataset.page=['upload','display','admin'].includes(PAGE)?PAGE:'display';
+function el(id){return document.getElementById(id)}
+function demoRead(){try{return JSON.parse(localStorage.getItem(demoKey)||'null')||demoMemory}catch{return demoMemory}}
+function demoWrite(arr){demoMemory=arr;try{localStorage.setItem(demoKey,JSON.stringify(arr))}catch{}window.dispatchEvent(new Event('demo:changed'))}
+function server(name,...args){
+ if(!DEMO) return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no)[name](...args));
+ return new Promise((ok,no)=>{try{
+   if(name==='getRoster')ok(EMBEDDED_ROSTER);
+   else if(name==='uploadCard'){
+     const p=args[0];const id='demo-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+     const rec={id,region:p.region,office:p.office,name:p.name,at:new Date().toISOString(),image:p.image,status:'正常'};
+     demoWrite([...demoRead(),rec]); ok({ok:true,id});
+   }
+   else if(name==='getActiveCards'||name==='getDisplayDelta'){
+       const cards=demoRead().filter(x=>x.status==='正常').map(({id,region,office,name,at})=>({id,region,office,name,at}));
+       if(name==='getDisplayDelta'){
+         const revision=cards.map(x=>x.id).join('|')||'empty';
+         ok(String(args[0]||'')===revision ? {revision,unchanged:true} : {revision,cards});
+       }else ok(cards);
+     }
+   else if(name==='getCardImage')ok(demoRead().find(x=>x.id===args[0]&&x.status==='正常')?.image||null);
+   else if(name==='getAdminCards')ok(demoRead().slice().reverse());
+   else if(name==='deleteCard'){
+     const arr=demoRead();const item=arr.find(x=>x.id===args[1]);if(item)item.status='已刪除';demoWrite(arr);ok({ok:true});
+   }
+   else if(name==='getPublicLinks')ok({upload:location.href.split('?')[0]+'?page=upload',display:location.href.split('?')[0]+'?page=display',admin:location.href.split('?')[0]+'?page=admin'});
+   else no(new Error('不支援的功能'));
+ }catch(err){no(err)}});
+}
+function errText(e){return String(e && e.message || e || '發生錯誤')}
+
+// 相片增亮、提升對比、輕微銳化；所有處理都在學員手機完成，Drive 保存處理後照片。
+function loadImage(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file);const im=new Image();im.onload=()=>{URL.revokeObjectURL(url);resolve(im)};im.onerror=()=>{URL.revokeObjectURL(url);reject(Error('無法讀取圖片'))};im.src=url})}
+async function enhancePhoto(file){
+ if(!file||!file.type.startsWith('image/'))throw Error('請選擇照片');
+ const img=await loadImage(file);const max=1600;const scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+ const w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale));
+ const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.filter='brightness(1.10) contrast(1.08) saturate(1.03)';ctx.drawImage(img,0,0,w,h);ctx.filter='none';
+ // 輕微邊緣加強：避免過度銳化造成手寫字筆畫破碎。
+ if(w*h<=2400000){
+   const imageData=ctx.getImageData(0,0,w,h),p=imageData.data,orig=new Uint8ClampedArray(p);
+   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+     const i=(y*w+x)*4;
+     for(let c=0;c<3;c++){
+       const center=orig[i+c];const avg=(orig[i-4+c]+orig[i+4+c]+orig[i-w*4+c]+orig[i+w*4+c])*.25;
+       p[i+c]=Math.min(255,Math.max(0,center+(center-avg)*.18));
+     }
+   }
+   ctx.putImageData(imageData,0,0);
+ }
+ let result=canvas.toDataURL('image/jpeg',.83);
+ for(const q of [.75,.65,.55]){if(result.length<1250000)break;result=canvas.toDataURL('image/jpeg',q)}
+ if(result.length>=1250000)throw Error('照片檔案較大，請換一張照片再試');
+ return result;
+}
+
+function initUpload(){
+ const region=el('region'),person=el('person'),preview=el('previewBox'),status=el('uploadStatus'),submit=el('submitCard');let chosenPhoto='';let busy=false;
+ const regions=[...new Set(EMBEDDED_ROSTER.map(r=>r.region))];
+ regions.forEach(r=>region.add(new Option(r,r)));
+ region.onchange=()=>{
+   person.innerHTML='<option value="">請選擇通訊處／姓名</option>';
+   EMBEDDED_ROSTER.filter(r=>r.region===region.value).forEach(r=>person.add(new Option(`${r.office}　${r.name}`,r.key)));
+   person.disabled=!region.value;validate();
+ };
+ person.onchange=validate;
+ function validate(){submit.disabled=busy||!chosenPhoto||!person.value||!region.value;}
+ async function handleFile(file){
+   if(!file)return;status.textContent='正在調整照片亮度與清晰度…';busy=true;validate();
+   try{chosenPhoto=await enhancePhoto(file);el('previewImage').src=chosenPhoto;preview.style.display='block';status.textContent='';}
+   catch(err){chosenPhoto='';preview.style.display='none';status.textContent=errText(err)}
+   finally{busy=false;validate()}
+ }
+ el('cameraBtn').onclick=()=>el('cameraInput').click();el('albumBtn').onclick=()=>el('albumInput').click();
+ for(const id of ['cameraInput','albumInput'])el(id).onchange=e=>{handleFile(e.target.files?.[0]);e.target.value=''};
+ submit.onclick=async()=>{
+   const selected=EMBEDDED_ROSTER.find(r=>r.key===person.value);if(!selected||!chosenPhoto||busy)return;
+   busy=true;validate();status.textContent='正在上傳…';
+   try{await server('uploadCard',{region:selected.region,office:selected.office,name:selected.name,image:chosenPhoto});el('uploadFormArea').classList.add('hidden');el('uploadDone').classList.remove('hidden');}
+   catch(err){status.textContent='上傳未完成：'+errText(err)}
+   finally{busy=false;validate()}
+ };
+ el('againBtn').onclick=()=>{chosenPhoto='';preview.style.display='none';el('uploadFormArea').classList.remove('hidden');el('uploadDone').classList.add('hidden');validate();};
+}
+
+// 大螢幕：12張照片的獨立游動、自然換入、照片避讓；不改動 Google Drive 與上傳流程。
+function initDisplay(){
+ const canvas=el('swimCanvas'),stage=el('stage'),ctx=canvas.getContext('2d',{alpha:true});
+ let W=0,H=0,dpr=1;
+ let cardStates=new Map(),order=[],visible=[];
+ let last=performance.now(),clock=0,lastSwap=performance.now(),rotationCursor=0;
+ let loading=new Set(),queued=new Set(),fetchQueue=[],inFlight=0;
+ let polling=false,firstPoll=true,lastRevision=null,pollErrors=0,backoffUntil=0;
+ let transitioning=false,pending=[],knownVersion=0;
+ const rand=(a,b)=>a+Math.random()*(b-a);
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ // 16:9投影幕同時12張；小螢幕則依可用空間自動縮減，不讓照片堆疊。
+ const visibleLimit=()=>W>=1030&&H>=580?12:W>=720?8:5;
+ function field(){return {left:W*.055,right:W*.945,top:Math.max(150,H*.288),bottom:H*.922}}
+ function scaleBase(){return clamp(Math.min(W/1660,H/910),.56,1.18)}
+ function tierSize(tier){
+   const s=scaleBase();
+   if(tier===0)return {w:240*s,h:158*s};
+   if(tier===1)return {w:194*s,h:130*s};
+   return {w:150*s,h:102*s};
+ }
+ function resize(){
+  const r=stage.getBoundingClientRect();W=Math.max(300,r.width);H=Math.max(300,r.height);
+  dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
+  canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
+  const f=field();for(const c of visible){c.x=clamp(c.x,f.left+c.w/2+20,f.right-c.w/2-20);c.y=clamp(c.y,f.top+c.h/2+20,f.bottom-c.h/2-20)}
+  assignTiers();
+ }
+ addEventListener('resize',resize);resize();
+ function assignTiers(){
+  const active=visible.filter(c=>!c.exit).sort((a,b)=>b.shownAt-a.shownAt);
+  // 最近加入的3張較大、接續5張中型，其餘4張遠景；每張都會輪流成為主視覺。
+  active.forEach((c,i)=>{const t=i<3?0:i<8?1:2;const sz=tierSize(t);c.tier=t;c.targetW=sz.w;c.targetH=sz.h});
+ }
+ function overlapsAt(x,y,w,h,other,margin=20){
+  const ow=other.targetW||other.w,oh=other.targetH||other.h;
+  // 加入旋轉預留空間，確保斜放的卡片也不會互蓋。
+  return Math.abs(other.x-x)<(w+ow)/2+margin && Math.abs(other.y-y)<(h+oh)/2+margin;
+ }
+ function locate(w,h){
+  const f=field();let best=null,bestPenalty=Infinity;
+  for(let i=0;i<420;i++){
+    const x=rand(f.left+w/2+20,f.right-w/2-20),y=rand(f.top+h/2+20,f.bottom-h/2-20);
+    let p=0;for(const c of visible){if(c.exit)continue;
+      const dx=(w+(c.targetW||c.w))/2+23-Math.abs(c.x-x);
+      const dy=(h+(c.targetH||c.h))/2+23-Math.abs(c.y-y);
+      if(dx>0&&dy>0)p+=dx*dy;
+    }
+    // 輕微偏好有呼吸感的中心區域，但不強迫排成固定列。
+    if(p<bestPenalty){bestPenalty=p;best={x,y}}if(p===0)break;
+  }
+  return best||{x:W*.5,y:H*.62};
+ }
+ function removeNow(c){visible=visible.filter(x=>x!==c);c.exit=false;assignTiers()}
+ function enter(c,isNew){
+  if(!c||visible.includes(c))return false;
+  const base=tierSize(1), spot=locate(base.w,base.h),now=performance.now();
+  Object.assign(c,{x:spot.x,y:spot.y,w:base.w,h:base.h,targetW:base.w,targetH:base.h,
+   vx:rand(-21,21),vy:rand(-17,17),phase:rand(0,Math.PI*2),pace:rand(.7,1.22),
+   speed:rand(19,32),angle:rand(-.045,.045),opacity:0,entry:now,shownAt:now,
+   isNew:!!isNew,exit:false,exitAt:0,tier:1});
+  visible.push(c);assignTiers();return true;
+ }
+ function queueEnter(c,isNew){
+  if(!c||visible.includes(c)||pending.some(p=>p.card===c))return;
+  const limit=visibleLimit();
+  if(visible.length<limit&&!transitioning){enter(c,isNew);return}
+  if(isNew)pending.unshift({card:c,isNew:true});else pending.push({card:c,isNew:false});
+  triggerSwap();
+ }
+ function triggerSwap(){
+  if(transitioning||!pending.length)return;
+  if(visible.length<visibleLimit()){
+    const item=pending.shift();enter(item.card,item.isNew);if(pending.length)triggerSwap();return;
+  }
+  const candidates=visible.filter(c=>!c.exit);
+  if(!candidates.length)return;
+  // 正在亮相的新卡片保留至少6秒，其餘輪流讓出舞台。
+  const now=performance.now();candidates.sort((a,b)=>((now-a.shownAt)<6000?100000:0)+a.shownAt - (((now-b.shownAt)<6000?100000:0)+b.shownAt));
+  const departing=candidates[0];departing.exit=true;departing.exitAt=now;transitioning=true;
+  window.setTimeout(()=>{
+    removeNow(departing);transitioning=false;
+    // 被移出畫面的照片保留在記憶體中，之後仍可再輪播出現。
+    if(pending.length){const next=pending.shift();if(order.includes(next.card.id))enter(next.card,next.isNew)}
+    if(pending.length)triggerSwap();
+  },860);
+ }
+ function drainImages(){
+  while(inFlight<3&&fetchQueue.length){
+   const item=fetchQueue.shift(),rec=item.rec;queued.delete(rec.id);
+   if(cardStates.has(rec.id)||loading.has(rec.id)||!order.includes(rec.id))continue;
+   loading.add(rec.id);inFlight++;
+   server('getCardImage',rec.id).then(src=>{
+    if(!src||!src.startsWith('data:image/')||!order.includes(rec.id))return;
+    const img=new Image();img.onload=()=>{
+      if(!order.includes(rec.id))return;
+      const c={...rec,image:img};cardStates.set(rec.id,c);
+      if(item.isNew||visible.length<visibleLimit())queueEnter(c,item.isNew);
+    };img.onerror=()=>console.warn('照片讀取失敗',rec.id);img.src=src;
+   }).catch(err=>console.warn('照片讀取失敗',err)).finally(()=>{inFlight--;loading.delete(rec.id);drainImages()});
+  }
+ }
+ function loadPhoto(rec,isNew){
+  if(cardStates.has(rec.id)||loading.has(rec.id)||queued.has(rec.id))return;
+  queued.add(rec.id);if(isNew)fetchQueue.unshift({rec,isNew});else fetchQueue.push({rec,isNew});drainImages();
+ }
+ async function poll(){
+  if(polling||document.hidden||performance.now()<backoffUntil)return;
+  polling=true;
+  try{
+   const state=await server('getDisplayDelta',lastRevision);
+   if(!state||typeof state!=='object')return;
+   pollErrors=0;backoffUntil=0;if(state.unchanged)return;
+   const recs=state.cards;if(!Array.isArray(recs))return;
+   lastRevision=String(state.revision||'');
+   const ids=new Set(recs.map(x=>x.id));
+   order=recs.map(r=>r.id);
+   for(const [id,c] of cardStates){if(!ids.has(id)){
+       visible=visible.filter(v=>v!==c);cardStates.delete(id);
+       pending=pending.filter(p=>p.card!==c);
+   }}
+   el('stageBlank').style.opacity=order.length?0:1;
+   const unseen=recs.filter(r=>!cardStates.has(r.id)&&!loading.has(r.id));
+   // 新照片優先進場；第一次載入則依上傳順序從頭開始。
+   unseen.forEach(r=>loadPhoto(r,!firstPoll));
+   firstPoll=false;assignTiers();
+  }catch(err){
+   pollErrors++;backoffUntil=performance.now()+Math.min(12000,1000*Math.pow(2,Math.min(pollErrors-1,4)));
+   console.warn('展示資料讀取失敗，暫時放慢重試',err);
+  }finally{polling=false}
+ }
+ function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+ function drawCard(c,now){
+  if(!c.image||c.opacity<=.001)return;
+  const w=c.w,h=c.h,enter=clamp((now-c.entry)/1200,0,1);
+  const scale=.86+.14*(1-(1-enter)*(1-enter));
+  ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.angle);ctx.scale(scale,scale);ctx.globalAlpha=clamp(c.opacity,0,1);
+  ctx.shadowColor='rgba(3,12,32,.50)';ctx.shadowBlur=c.tier===0?24:17;ctx.shadowOffsetY=11;
+  ctx.fillStyle='#fffaf3';roundRect(-w/2-5,-h/2-5,w+10,h+10,8);ctx.fill();ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  ctx.save();roundRect(-w/2,-h/2,w,h,4);ctx.clip();ctx.fillStyle='#f6f0e8';ctx.fillRect(-w/2,-h/2,w,h);
+  const iw=c.image.naturalWidth||c.image.width,ih=c.image.naturalHeight||c.image.height;
+  const r=Math.min(w/iw,h/ih),rw=iw*r,rh=ih*r;
+  // 保留整張原始照片，不裁切、不重新輸出成電腦字。
+  ctx.drawImage(c.image,-rw/2,-rh/2,rw,rh);ctx.restore();
+  if(now-c.entry<4400){
+    ctx.strokeStyle='rgba(255,216,145,'+(.52*Math.max(0,1-(now-c.entry)/4400))+')';
+    ctx.lineWidth=2.8;roundRect(-w/2-8,-h/2-8,w+16,h+16,11);ctx.stroke();
+  }
+  ctx.restore();
+ }
+ function step(now){
+  const dt=Math.min((now-last)/1000,.038);last=now;clock+=dt;
+  ctx.clearRect(0,0,W,H);
+  const f=field(),active=visible.filter(c=>c.image);
+  for(const c of active){
+    if(c.exit){c.opacity=Math.max(0,1-(now-c.exitAt)/820);continue}
+    c.opacity=Math.min(1,c.opacity+dt*1.1);
+    // 平滑調整成3張近景、5張中景、4張遠景，沒有固定格子或同方向移動。
+    c.w+=(c.targetW-c.w)*Math.min(1,dt*1.35);c.h+=(c.targetH-c.h)*Math.min(1,dt*1.35);
+    const desiredX=Math.sin(clock*.18*c.pace+c.phase)*c.speed+
+                   Math.sin(clock*.11+c.phase*2.3)*c.speed*.35;
+    const desiredY=Math.cos(clock*.23*c.pace+c.phase*1.4)*c.speed*.72+
+                   Math.sin(clock*.12+c.phase*.8)*c.speed*.28;
+    c.vx+=(desiredX-c.vx)*Math.min(1,dt*.47);
+    c.vy+=(desiredY-c.vy)*Math.min(1,dt*.47);
+    // 接近邊界即輕輕轉向，而非撞牆後瞬間反彈。
+    const mx=Math.max(34,c.w*.65),my=Math.max(30,c.h*.7);
+    if(c.x<f.left+mx)c.vx+=dt*(f.left+mx-c.x)*.85;
+    if(c.x>f.right-mx)c.vx-=dt*(c.x-(f.right-mx))*.85;
+    if(c.y<f.top+my)c.vy+=dt*(f.top+my-c.y)*1.0;
+    if(c.y>f.bottom-my)c.vy-=dt*(c.y-(f.bottom-my))*1.0;
+    c.x+=c.vx*dt;c.y+=c.vy*dt;
+    c.angle=Math.sin(clock*.27+c.phase)*.048;
+  }
+  // 避讓系統：以含旋轉餘裕的安全框解決重疊。每張卡片始終可完整看見。
+  for(let k=0;k<10;k++){
+    let collisions=0;
+    for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++){
+      const a=active[i],b=active[j];if(a.exit||b.exit)continue;
+      const dx=b.x-a.x,dy=b.y-a.y;
+      const overX=(a.w+b.w)/2+21-Math.abs(dx),overY=(a.h+b.h)/2+19-Math.abs(dy);
+      if(overX>0&&overY>0){collisions++;
+        const sX=dx>=0?1:-1,sY=dy>=0?1:-1;
+        if(overX<overY){const shift=(overX+1)*.52;a.x-=shift*sX;b.x+=shift*sX;a.vx-=sX*2;b.vx+=sX*2;}
+        else{const shift=(overY+1)*.52;a.y-=shift*sY;b.y+=shift*sY;a.vy-=sY*2;b.vy+=sY*2;}
+      }
+    }
+    for(const c of active){c.x=clamp(c.x,f.left+c.w*.5+13,f.right-c.w*.5-13);c.y=clamp(c.y,f.top+c.h*.5+13,f.bottom-c.h*.5-13)}
+    if(!collisions)break;
+  }
+  active.sort((a,b)=>a.tier-b.tier); // 遠近層次；避讓後不會彼此蓋住。
+  for(const c of active)drawCard(c,now);
+  // 每4.5秒逐張輪換。若上傳不足12張，現有照片會持續游動，不會硬補空卡。
+  if(now-lastSwap>4500&&!transitioning){
+    lastSwap=now;
+    if(order.length>visible.length){
+      for(let ii=0;ii<order.length;ii++){
+        const idx=(rotationCursor+ii)%order.length,candidate=cardStates.get(order[idx]);
+        if(candidate&&!visible.includes(candidate)&&!pending.some(p=>p.card===candidate)){
+          rotationCursor=(idx+1)%order.length;queueEnter(candidate,false);break;
+        }
+      }
+    }
+  }
+  requestAnimationFrame(step);
+ }
+ el('fullScreenBtn').onclick=()=>document.fullscreenElement?document.exitFullscreen():stage.requestFullscreen();
+ el('demoBtn').onclick=()=>{
+  if(!DEMO){alert('正式模式請由學員上傳照片');return}
+  const texts=['打造人才梯隊','強化增員動能','升級經營節奏','帶領團隊再成長','聚焦組織發展','讓管理走向經營','讓主管主動帶人','建立增員共識','優化人才培育','拓展高潛力市場','推動組織再成長','建立主管接班','讓團隊自主經營','強化經營動能','重新定義成長','培育新世代領導','提升經營效能','帶領團隊向前'];
+  const arr=demoRead();texts.forEach((s,i)=>{
+    const c=document.createElement('canvas');c.width=940;c.height=600;const p=c.getContext('2d');
+    p.fillStyle='#e3d8c9';p.fillRect(0,0,940,600);p.save();p.translate(470,300);p.rotate(((i%5)-2)*.018);p.translate(-470,-300);
+    p.fillStyle='#faf7f0';p.fillRect(29,27,882,545);p.strokeStyle='#d5bf9a';p.lineWidth=2;p.strokeRect(29,27,882,545);
+    p.fillStyle='#284b7b';p.font='bold 37px Microsoft JhengHei';p.fillText('企業家經營班　經營決策卡',74,112);
+    p.fillStyle='#34425a';p.font='56px DFKai-SB, Microsoft JhengHei';p.fillText(s,104,317);
+    p.fillStyle='#9e7751';p.font='26px Microsoft JhengHei';p.fillText('影像模擬 '+(i+1),690,504);p.restore();
+    arr.push({id:'sample-'+Date.now()+'-'+i,region:'北一',office:'示範',name:'',at:new Date().toISOString(),status:'正常',image:c.toDataURL('image/jpeg',.65)});
+  });demoWrite(arr);poll();
+ };
+ window.addEventListener('storage',e=>{if(e.key===demoKey)poll()});window.addEventListener('demo:changed',poll);
+ poll();setInterval(poll,500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});requestAnimationFrame(step);
+}
+function initAdmin(){let PIN='';const rows=el('adminRows');const showError=el('adminLoginError');
+ async function enter(){const pin=el('adminPin').value.trim();if(!pin&&!DEMO){showError.textContent='請輸入密碼';return}
+ try{await server('getAdminCards',pin);PIN=pin;showError.textContent='';el('adminLogin').classList.add('hidden');el('adminInside').classList.remove('hidden');await loadLinks();await refresh();}
+ catch(err){showError.textContent=errText(err)}}
+ async function loadLinks(){const urls=await server('getPublicLinks');el('uploadLink').href=urls.upload;el('uploadLink').textContent=urls.upload;el('displayLink').href=urls.display;el('displayLink').textContent=urls.display;
+ el('qrImage').src='https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=12&data='+encodeURIComponent(urls.upload);}
+ async function refresh(){if(!PIN&&!DEMO)return;rows.textContent='載入中…';try{const data=await server('getAdminCards',PIN);rows.innerHTML='';if(!data.length){rows.innerHTML='<div class="adminEmpty">目前尚無上傳照片</div>';return}
+   data.forEach(item=>{
+     const row=document.createElement('div');row.className='adminRow'+(item.status==='已刪除'?' isDeleted':'');
+     const left=document.createElement('div');left.className='adminItemL';
+     const im=document.createElement('img');im.className='adminThumb';im.alt='卡片照片';im.loading='lazy';im.style.visibility='hidden';
+     const txt=document.createElement('div');const name=document.createElement('div');name.className='name';name.textContent=item.region+'　'+item.office+'　'+item.name;
+     const meta=document.createElement('div');meta.className='meta';meta.textContent=(item.status||'正常')+'　'+(item.at||'');txt.append(name,meta);left.append(im,txt);
+     const btn=document.createElement('button');btn.textContent='刪除照片';btn.disabled=item.status==='已刪除';btn.onclick=async()=>{if(!confirm('確定刪除「'+item.office+' '+item.name+'」的這張照片？'))return;btn.disabled=true;try{await server('deleteCard',PIN,item.id);await refresh()}catch(err){alert(errText(err));btn.disabled=false}};
+     row.append(left,btn);rows.append(row);
+     if(item.status!=='已刪除')server('getCardImage',item.id).then(src=>{if(src){im.src=src;im.style.visibility='visible'}}).catch(()=>{});
+   });
+ }catch(err){rows.textContent=errText(err)}}
+ el('adminGo').onclick=enter;el('adminPin').onkeydown=e=>{if(e.key==='Enter')enter()};el('adminRefresh').onclick=refresh;
+ if(DEMO){el('adminPin').placeholder='預覽模式不需要密碼';}
+}
+if(PAGE==='upload')initUpload();else if(PAGE==='display')initDisplay();else if(PAGE==='admin')initAdmin();
+})();
+</script>
+<div id="cloudSetupNotice" role="alert" style="position:fixed;inset:0;display:grid;place-items:center;padding:20px;background:rgba(6,23,48,.79);backdrop-filter:blur(8px);z-index:999999;color:white;font-family:system-ui,'Microsoft JhengHei',sans-serif">
+ <div style="width:min(94vw,560px);padding:32px 30px;background:#0e2c52;border:1px solid #dfb56c;border-radius:18px;text-align:center;box-shadow:0 25px 55px #0007">
+ <div style="font-size:24px;font-weight:700;margin-bottom:14px">雲端上傳尚未啟用</div>
+ <p style="font-size:16px;line-height:1.75;color:#f2f3f8">網頁已放到企業家經營班網站下方，但 Google Drive 儲存服務仍需完成一次 Apps Script 部署與授權。設定之前不接受正式照片，避免誤以為上傳成功。</p>
+ <a style="display:inline-block;background:#f2c780;color:#152c4e;text-decoration:none;padding:11px 18px;border-radius:9px;font-weight:700" href="./">查看設定說明</a>
+ </div></div>
+</body>
+</html>
