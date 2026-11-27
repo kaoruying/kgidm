@@ -311,7 +311,7 @@ function initDisplay(){
   enlarged.alt='放大的行動決策卡';
   const close=document.createElement('button');close.type='button';
   close.textContent='✕ 關閉';close.setAttribute('aria-label','關閉放大照片');
-  box.append(enlarged,close);document.body.appendChild(box);
+  box.append(enlarged,close);stage.appendChild(box);
   const hideZoom=()=>{box.classList.remove('active');enlarged.removeAttribute('src')};
   close.onclick=hideZoom;
   box.onclick=e=>{if(e.target===box)hideZoom()};
