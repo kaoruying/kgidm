@@ -166,15 +166,13 @@ function initDisplay(){
   }
   function chooseGrid(n){
     const b=bounds(),areaW=b.right-b.left,areaH=b.bottom-b.top;
-    if(n<=0)return {cols:1,rows:1,cardW:80,cardH:120,areaW,areaH,b};
+    if(n<=0)return {cols:1,rows:1,cardW:90,cardH:130,areaW,areaH,b};
     let best=null;
-    for(let col=1;col<=Math.min(n,14);col++){
-      const row=Math.ceil(n/col),cw=areaW/col,ch=areaH/row;
-      // 直式卡面約 0.70 : 1。每格留下空間供獨立漂浮。
-      const h=Math.min(260,ch*.80,cw*.79/0.70),w=h*.70;
-      // 當張數相同時，優先尺寸較大，並避免極端不平衡排法。
-      const score=h-.35*Math.abs(col/row-2.35);
-      if(!best||score>best.score)best={cols:col,rows:row,cardW:w,cardH:h,areaW,areaH,b,score};
+    for(let rows=1;rows<=Math.min(n,8);rows++){
+      const cols=Math.ceil(n/rows);
+      const w=Math.min(190,areaW/(cols*1.13),areaH/(rows*1.10)*.70);
+      const score=w-Math.abs(cols/rows-3.6)*.65;
+      if(!best||score>best.score)best={cols,rows,cardW:w,cardH:w/.70,areaW,areaH,b,score};
     }
     return best;
   }
@@ -188,23 +186,22 @@ function initDisplay(){
     updateLayout();
   }
   function updateLayout(){
-    const n=Math.min(records.length,MAX_CARDS);
-    const g=chooseGrid(n);
-    columns=g.cols;rows=g.rows;cellW=g.areaW/columns;cellH=g.areaH/rows;
+    const n=Math.min(records.length,MAX_CARDS);if(!n)return;
+    const g=chooseGrid(n),gapX=Math.max(9,g.cardW*.12),gapY=Math.max(10,g.cardH*.09);
+    columns=g.cols;rows=g.rows;cellW=g.cardW+gapX;cellH=g.cardH+gapY;
     layoutW=g.cardW;layoutH=g.cardH;
-    // 每一張永遠有自己的空間，游動只發生在格子內，不會蓋住鄰卡。
-    const ids=records.slice(0,MAX_CARDS).map(x=>x.id);
-    ids.forEach((id,i)=>{
-      const c=cardStates.get(id);if(!c)return;
+    const totalH=rows*cellH-gapY,startY=g.b.top+(g.areaH-totalH)*.5;
+    records.slice(0,MAX_CARDS).forEach((rec,i)=>{
+      const p=cardStates.get(rec.id);if(!p)return;
       const row=Math.floor(i/columns),col=i%columns;
-      const countThisRow=Math.min(columns,n-row*columns);
-      const span=countThisRow*cellW;
-      const rowLeft=g.b.left+(g.areaW-span)*.5;
-      c.tx=rowLeft+(col+.5)*cellW;
-      c.ty=g.b.top+(row+.5)*cellH;
-      c.targetW=layoutW;c.targetH=layoutH;
-      c.driftX=Math.min(10,Math.max(2,(cellW-layoutW)*.18));
-      c.driftY=Math.min(8,Math.max(2,(cellH-layoutH)*.18));
+      const count=Math.min(columns,n-row*columns);
+      const rowWidth=count*cellW-gapX;
+      const stagger=row%2?Math.min(g.cardW*.15,(g.areaW-rowWidth)*.3):0;
+      const x0=g.b.left+(g.areaW-rowWidth)*.5+stagger;
+      p.tx=x0+col*cellW+g.cardW*.5;
+      p.ty=startY+row*cellH+g.cardH*.5+Math.sin(col*.93+row)*Math.min(5,gapY*.3);
+      p.targetW=g.cardW;p.targetH=g.cardH;
+      p.driftX=Math.min(3,gapX*.14);p.driftY=Math.min(3,gapY*.13);
     });
   }
   function queueImage(rec){
