@@ -36,7 +36,13 @@ select{width:100%;height:51px;background:#fff;border:1px solid #d8dce4;border-ra
 .adminShell{max-width:960px;margin:0 auto;padding:24px 18px 60px}.adminHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 20px}.adminHead h1{font-size:23px;margin:0}.adminHead small{color:#7b8495}.adminCard{background:#fff;border:1px solid #e0e5ef;border-radius:17px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(22,43,85,.04)}.adminCard h2{margin:0 0 14px;font-size:17px}.pinRow{display:flex;gap:10px;align-items:center}.pinRow input{flex:1;min-width:0;border:1px solid #d4dbe6;border-radius:10px;padding:12px}.plainBtn{padding:11px 18px;border:0;background:#14386f;color:#fff;border-radius:10px}.miniLink{display:inline-block;max-width:100%;overflow-wrap:anywhere;color:#1d4f96;text-decoration:underline;font-size:13px}.qr{width:164px;height:164px;object-fit:contain;border:1px solid #e7e9ef;border-radius:8px;padding:6px;background:#fff}.linksGrid{display:flex;gap:19px;align-items:flex-start;flex-wrap:wrap}.linksGrid div{flex:1;min-width:240px}.adminRows{display:grid;gap:10px}.adminRow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px;border:1px solid #e8ebf1;border-radius:11px;background:#fff}.adminRow .name{font-weight:800;font-size:14px}.adminRow .meta{font-size:12px;color:#6e788b;margin-top:3px}.adminRow button{border:1px solid #cc7c78;color:#a23a33;padding:8px 11px;border-radius:9px;background:#fff;white-space:nowrap;font-size:13px}.adminRow.isDeleted{opacity:.5}.adminRow.isDeleted button{display:none}.adminThumb{width:85px;max-height:62px;object-fit:contain;background:#f3f0ec;border-radius:6px;border:1px solid #eee}.adminItemL{display:flex;gap:10px;align-items:center;min-width:0}.adminRow .meta{overflow-wrap:anywhere}.adminEmpty{color:#64718c;font-size:14px;padding:20px 0}.adminNote{font-size:12px;color:#7b8495;margin-top:12px}
 @media(min-width:640px){.uploadShell{padding-top:60px}}
 </style>
-</head>
+<style>
+#actionCardZoom{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(2,12,30,.93);padding:44px 16px}
+#actionCardZoom.active{display:flex}
+#actionCardZoom img{display:block;max-width:min(94vw,1100px);max-height:86vh;object-fit:contain;border-radius:5px;box-shadow:0 20px 68px #0009}
+#actionCardZoom button{position:absolute;top:16px;right:20px;padding:11px 18px;border-radius:28px;color:#fff;background:#153963;border:1px solid #f6deac;font-size:15px;font-weight:700;cursor:pointer}
+.stageTools{opacity:1!important}
+</style></head>
 <body data-page="display">
 <div class="screen" id="displayPage">
   <div class="stage" id="stage">
@@ -256,25 +262,37 @@ function initDisplay(){
       console.warn('投影頁更新暫時失敗',err);const b=el('stageBlank');if(b&&!order.length){b.textContent='展示資料連線中，請確認 Apps Script 已部署最新版 Code.gs 與 Bridge.gs';b.style.opacity=1;}
     }finally{pollBusy=false;}
   }
-  function drawCard(c,now){
+  let hitZones=[];
+  function cardRect(c,now){
     const iw=c.image.naturalWidth||c.image.width,ih=c.image.naturalHeight||c.image.height;
-    if(!iw||!ih)return;
-    const t=now*.001,dx=Math.sin(t*.58*c.pace+c.phase)*c.driftX,
-      dy=Math.cos(t*.44*c.pace+c.phase*1.7)*c.driftY;
-    const x=c.x+dx,y=c.y+dy;
-    const angle=Math.sin(t*.31*c.pace+c.phase)*.022;
-    const factor=Math.min(c.w/iw,c.h/ih);
-    const rw=iw*factor,rh=ih*factor;
-    if(rw<1||rh<1)return;
-    ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.globalAlpha=c.opacity;
+    if(!iw||!ih)return null;
+    const t=now*.001;
+    const dx=Math.sin(t*.58*c.pace+c.phase)*c.driftX;
+    const dy=Math.cos(t*.44*c.pace+c.phase*1.7)*c.driftY;
+    const scale=Math.min(c.w/iw,c.h/ih);
+    return {x:c.x+dx,y:c.y+dy,w:iw*scale,h:ih*scale};
+  }
+  function drawCard(c,now){
+    const box=cardRect(c,now);
+    if(!box||box.w<1||box.h<1)return;
+    const angle=Math.sin(now*.00031*c.pace+c.phase)*.015;
+    ctx.save();ctx.translate(box.x,box.y);ctx.rotate(angle);ctx.globalAlpha=c.opacity;
     ctx.shadowColor='rgba(4,14,36,.35)';ctx.shadowBlur=12;ctx.shadowOffsetY=5;
-    // 直接繪製照片本身，無白框或底色；不裁切手寫文字。
-    ctx.drawImage(c.image,-rw*.5,-rh*.5,rw,rh);
+    ctx.drawImage(c.image,-box.w*.5,-box.h*.5,box.w,box.h);
     ctx.restore();
+    hitZones.push({card:c,x:box.x,y:box.y,w:box.w,h:box.h});
+  }
+  function findCard(x,y){
+    for(let i=hitZones.length-1;i>=0;i--){
+      const a=hitZones[i];
+      if(Math.abs(x-a.x)<=a.w/2+3&&Math.abs(y-a.y)<=a.h/2+3)return a.card;
+    }
+    return null;
   }
   function step(now){
     const dt=Math.min((now-lastFrame)/1000,.05);lastFrame=now;
     ctx.clearRect(0,0,W,H);
+    hitZones=[];
     for(const rec of records){
       const c=cardStates.get(rec.id);if(!c)continue;
       const k=Math.min(1,dt*3.2);
@@ -285,6 +303,28 @@ function initDisplay(){
     }
     requestAnimationFrame(step);
   }
+  const box=document.createElement('div');
+  box.id='actionCardZoom';
+  box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');
+  box.setAttribute('aria-label','行動決策卡放大檢視');
+  const enlarged=document.createElement('img');
+  enlarged.alt='放大的行動決策卡';
+  const close=document.createElement('button');close.type='button';
+  close.textContent='✕ 關閉';close.setAttribute('aria-label','關閉放大照片');
+  box.append(enlarged,close);document.body.appendChild(box);
+  const hideZoom=()=>{box.classList.remove('active');enlarged.removeAttribute('src')};
+  close.onclick=hideZoom;
+  box.onclick=e=>{if(e.target===box)hideZoom()};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')hideZoom()});
+  function hitEvent(e){
+    const r=canvas.getBoundingClientRect();
+    return findCard((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);
+  }
+  canvas.addEventListener('pointermove',e=>{canvas.style.cursor=hitEvent(e)?'pointer':'default'});
+  canvas.addEventListener('click',e=>{
+    const chosen=hitEvent(e);if(!chosen)return;
+    enlarged.src=chosen.image.src;box.classList.add('active');
+  });
   const fs=el('fullScreenBtn');
   if(fs)fs.onclick=()=>document.fullscreenElement?document.exitFullscreen():stage.requestFullscreen();
   addEventListener('resize',resize);
