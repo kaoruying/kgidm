@@ -101,6 +101,17 @@
 #fullscreenBtn{font-size:17px}
 #zoomPrompt{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:30;background:#102d5ce8;color:#fff;padding:6px 13px;border-radius:20px;font-size:12px;display:none}
 @media(max-width:700px){#zoomPrompt{display:block}}
+</style><style>
+.wall{display:block!important;overflow:hidden!important;pointer-events:auto;z-index:4!important;top:205px!important;bottom:105px!important;left:48px!important;right:48px!important;padding:0!important}
+#swimCanvas{width:100%;height:100%;display:block;cursor:default;touch-action:manipulation}
+.card{display:none!important}
+.counter{z-index:5}
+.tools{z-index:7}
+.footer-quote{z-index:5}
+.title-badge,.brand{z-index:6}
+#cardTip{position:absolute;top:177px;right:60px;z-index:7;color:#f0dfc4;font-size:15px;letter-spacing:.04em;opacity:.92}
+.overlay-card{background:#fff5df}
+@media (prefers-reduced-motion: reduce){#swimCanvas{filter:none}}
 </style></head>
 <body>
 <div id="zoomPrompt">可點擊任一卡片放大檢視</div>
@@ -118,13 +129,13 @@
   </div>
   <div class="brand">凱基人壽　企業家經營班</div>
 
-  <div class="wall" id="wall"></div>
+  <div class="wall" id="wall"><canvas id="swimCanvas" aria-label="34張行動決策卡2D動態展示"></canvas></div><div id="cardTip">每張卡片都能點擊放大</div>
 
   <div class="footer-quote">每一個決定，都是通往下一段成長的起點</div>
   <div class="tools">
     <button class="btn" id="fullscreenBtn">全螢幕</button>
   </div>
-  <div class="counter">示意畫面．已顯示 34 / 34 張</div>
+  <div class="counter">2D 動態示意．34 張行動決策卡</div>
 
   <div class="mountain m1"></div>
   <div class="mountain m2"></div>
@@ -162,57 +173,144 @@ const names = [
   '北一｜葉經理','北二｜鍾經理','桃竹｜呂經理','中嘉｜廖經理','台南｜蕭經理','高屏｜江經理',
   '北一｜余經理','北二｜沈經理','桃竹｜程經理','中嘉｜許經理'
 ];
-const positions = [
-  [1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],
-  [2,1],[2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],[2,9],[2,10],[2,11],[2,12],
-  [3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],[3,11]
-];
-const wall = document.getElementById('wall');
-const overlay = document.getElementById('overlay');
-const ovAnswer = document.getElementById('ovAnswer');
-const ovName = document.getElementById('ovName');
-const ovNo = document.getElementById('ovNo');
 
-sampleTexts.forEach((txt,idx)=>{
-  const [r,c]=positions[idx];
-  const card=document.createElement('article');
-  card.className=`card r${r} c${c}`;
-  const rot=[-2.5,1.2,-1.3,2.2,-1.8,1.8, -1.2,2.5,-2,1.3,-1.6,2, 1.5,-2.1,1.1,-1.4,2.3,-2.2,1.8,-1.3,1.7,-2.4,1.1,-1.7, -2.2,1.4,-1,2.1,-1.5,1.7,-2.1,1.2,-1.1,2.1][idx];
-  const y=[3,-2,2,-3,2,-2, 4,-1,3,-2,1,-1, -2,3,-3,1,-2,2, -1,2,-3,1,-2,3, 2,-3,2,-2,1,-1,3,-2,1,-2][idx];
-  card.style.transform=`rotate(${rot}deg) translateY(${y}px)`;
-  card.innerHTML=`<div class="card-inner">
-      <div class="minihead"><span>下一局，由我定義</span><span>企業家經營班</span></div>
-      <div class="minititle">行動決策卡</div>
-      <div class="question">我的下一步</div>
-      <div class="answer">${txt.replace(/\n/g,'<br>')}</div>
-      <div class="lines"><div class="line"></div><div class="line"></div><div class="line"></div></div>
-      <div class="member">測試 ${String(idx+1).padStart(2,'0')}</div>
-    </div>`;
-  card.dataset.answer=txt.replace(/\n/g,' / ');
-  card.dataset.name=names[idx];
-  card.dataset.no=`測試 ${String(idx+1).padStart(2,'0')}`;
-  card.addEventListener('click',()=>{
-    ovAnswer.innerHTML=txt.replace(/\n/g,'<br>');
-    ovName.textContent=names[idx];
-    ovNo.textContent=`示意卡片｜${card.dataset.no}`;
-    overlay.classList.add('active');
-  });
-  wall.appendChild(card);
+const TOTAL=34;
+const wall=document.getElementById('wall');
+const canvas=document.getElementById('swimCanvas');
+const ctx=canvas.getContext('2d');
+const overlay=document.getElementById('overlay');
+const ovAnswer=document.getElementById('ovAnswer');
+const ovName=document.getElementById('ovName');
+const ovNo=document.getElementById('ovNo');
+const W=wall.clientWidth||1824, H=wall.clientHeight||770;
+let ratio=1,last=performance.now(),time=0;
+let hitAreas=[],hover=-1;
+const paper=[],cards=[];
+const seed=(i,v=0)=>{let n=Math.sin((i+1)*127.1+v*74.7)*43758.5453;return n-Math.floor(n)};
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function roundRect(context,x,y,w,h,r){
+ context.beginPath();context.roundRect(x,y,w,h,r);
+}
+function drawPaper(i){
+ const c=document.createElement('canvas');c.width=280;c.height=404;
+ const g=c.getContext('2d');
+ const hue=[43,41,40,44,42,37,46][i%7];
+ g.fillStyle='hsl('+hue+',55%,94%)';g.fillRect(0,0,280,404);
+ g.strokeStyle='rgba(180,145,89,.6)';g.lineWidth=4;g.strokeRect(2,2,276,400);
+ g.fillStyle='#31507e';g.font='bold 13px "Microsoft JhengHei",sans-serif';g.fillText('下一局，由我定義',17,26);
+ g.font='11px "Microsoft JhengHei",sans-serif';g.fillStyle='#ac8842';g.textAlign='right';g.fillText('企業家經營班',260,26);g.textAlign='left';
+ g.strokeStyle='#e3d6be';g.lineWidth=1;g.beginPath();g.moveTo(17,39);g.lineTo(263,39);g.stroke();
+ g.textAlign='center';g.fillStyle='#284878';g.font='bold 22px "Microsoft JhengHei",sans-serif';g.fillText('行動決策卡',140,74);
+ g.textAlign='left';g.fillStyle='#a17b3d';g.font='bold 14px "Microsoft JhengHei",sans-serif';g.fillText('下一步，我將……',20,111);
+ const lines=sampleTexts[i].split('\n');g.font='21px "DFKai-SB","KaiTi","Microsoft JhengHei",serif';g.fillStyle='#263e63';
+ lines.forEach((t,j)=>g.fillText(t,24,154+j*43,240));
+ g.strokeStyle='#e4d7bf';g.lineWidth=1;
+ for(let y=260;y<=344;y+=28){g.beginPath();g.moveTo(22,y);g.lineTo(259,y);g.stroke()}
+ g.textAlign='right';g.font='bold 13px "Microsoft JhengHei",sans-serif';g.fillStyle='#bb8d32';g.fillText('示意 '+String(i+1).padStart(2,'0'),257,385);
+ paper.push(c);
+}
+for(let i=0;i<TOTAL;i++)drawPaper(i);
+const CELL_W=129,CELL_H=188;
+const rowCounts=[12,11,11];
+let index=0;
+for(let r=0;r<3;r++){
+ const n=rowCounts[r], spacing=147, rowWidth=(n-1)*spacing+CELL_W;
+ const left=(W-rowWidth)/2 + (r===1?11:r===2?-13:0);
+ for(let j=0;j<n;j++){
+  const i=index++;
+  const x=left+j*spacing+CELL_W/2+(seed(i,1)-.5)*7;
+  const y=123+r*218+(seed(i,2)-.5)*31+(j%3===0?6:0);
+  cards.push({i,x,y,homeX:x,homeY:y,vx:(seed(i,3)-.5)*6,vy:(seed(i,4)-.5)*6,
+   phase:seed(i,5)*Math.PI*2,pace:.74+seed(i,6)*.51,
+   turn:(seed(i,7)-.5)*.048,angle:0,tw:CELL_W,th:CELL_H});
+ }
+}
+function resize(){
+ const bounds=wall.getBoundingClientRect();ratio=Math.min(devicePixelRatio||1,2);
+ const w=bounds.width||W,h=bounds.height||H;
+ canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);
+ ctx.setTransform(ratio,0,0,ratio,0,0);
+}
+window.addEventListener('resize',resize);resize();
+function update(dt){
+ // 34張卡片各自沿不同平滑的2D曲線游動，並透過慣性連續轉向
+ for(const c of cards){
+  const t=time*.001;
+  const orbitX=Math.sin(t*.46*c.pace+c.phase)*17+Math.sin(t*.21*c.pace+c.phase*2.4)*9;
+  const orbitY=Math.cos(t*.36*c.pace+c.phase*1.2)*13+Math.sin(t*.27*c.pace+c.phase*.8)*7;
+  const tx=c.homeX+orbitX,ty=c.homeY+orbitY;
+  const friction=Math.exp(-3.4*dt);
+  c.vx=(c.vx+(tx-c.x)*dt*13)*friction;
+  c.vy=(c.vy+(ty-c.y)*dt*13)*friction;
+  c.x+=c.vx*dt;c.y+=c.vy*dt;
+  c.angle=Math.sin(t*.37*c.pace+c.phase)*.025+c.turn;
+ }
+ // 矩形碰撞避讓，確保不重疊；推開的是卡片本身而不是一整列
+ for(let step=0;step<4;step++){
+  for(let i=0;i<cards.length;i++)for(let j=i+1;j<cards.length;j++){
+   const a=cards[i],b=cards[j],dx=b.x-a.x,dy=b.y-a.y;
+   const ox=(CELL_W+12)-Math.abs(dx),oy=(CELL_H+12)-Math.abs(dy);
+   if(ox>0&&oy>0){
+    if(ox<oy){const push=ox*.51*(dx>=0?1:-1);a.x-=push;b.x+=push;a.vx*=.86;b.vx*=.86}
+    else{const push=oy*.51*(dy>=0?1:-1);a.y-=push;b.y+=push;a.vy*=.86;b.vy*=.86}
+   }
+  }
+ }
+ for(const c of cards){
+  c.x=clamp(c.x,CELL_W/2+4,W-CELL_W/2-4);
+  c.y=clamp(c.y,CELL_H/2+5,H-CELL_H/2-5);
+ }
+}
+function draw(now){
+ const dt=Math.min((now-last)/1000,.05);last=now;time=now;
+ update(dt);
+ ctx.clearRect(0,0,W,H);hitAreas=[];
+ const order=cards.slice().sort((a,b)=>a.i===hover?1:b.i===hover?-1:0);
+ for(const c of order){
+  const x=c.x,y=c.y,w=CELL_W,h=CELL_H;
+  ctx.save();ctx.translate(x,y);ctx.rotate(c.angle);
+  ctx.shadowColor=hover===c.i?'rgba(4,19,39,.55)':'rgba(4,16,39,.36)';
+  ctx.shadowBlur=hover===c.i?26:15;ctx.shadowOffsetY=9;
+  ctx.drawImage(paper[c.i],-w/2,-h/2,w,h);
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  if(hover===c.i){ctx.strokeStyle='#f7c870';ctx.lineWidth=3;ctx.strokeRect(-w/2-2,-h/2-2,w+4,h+4)}
+  ctx.restore();
+  hitAreas.push(c);
+ }
+ requestAnimationFrame(draw);
+}
+function hit(e){
+ const bounds=canvas.getBoundingClientRect(),x=(e.clientX-bounds.left)*W/bounds.width,y=(e.clientY-bounds.top)*H/bounds.height;
+ for(let i=hitAreas.length-1;i>=0;i--){
+  const c=hitAreas[i];if(Math.abs(x-c.x)<=CELL_W/2&&Math.abs(y-c.y)<=CELL_H/2)return c;
+ }
+ return null;
+}
+canvas.addEventListener('pointermove',e=>{
+ const c=hit(e);hover=c?c.i:-1;canvas.style.cursor=c?'pointer':'default';
 });
-
+canvas.addEventListener('pointerleave',()=>{hover=-1;canvas.style.cursor='default'});
+canvas.addEventListener('click',e=>{
+ const c=hit(e);if(!c)return;
+ ovAnswer.innerHTML=sampleTexts[c.i].split('\n').join('<br>');
+ ovName.textContent=names[c.i];ovNo.textContent='示意卡片｜測試 '+String(c.i+1).padStart(2,'0');
+ overlay.classList.add('active');
+});
 document.getElementById('closeBtn').onclick=()=>overlay.classList.remove('active');
-overlay.addEventListener('click',e=>{if(e.target===overlay) overlay.classList.remove('active')});
-document.addEventListener('keydown',e=>{if(e.key==='Escape') overlay.classList.remove('active')});
-
-
-function scaleStage(){ const root=document.getElementById('stage');const k=Math.min(window.innerWidth/1920,window.innerHeight/1080);root.style.transform='translate('+Math.round((window.innerWidth-1920*k)/2)+'px,'+Math.round((window.innerHeight-1080*k)/2)+'px) scale('+k+')';}
+overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('active')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')overlay.classList.remove('active')});
+function scaleStage(){
+ const root=document.getElementById('stage'),k=Math.min(innerWidth/1920,innerHeight/1080);
+ root.style.transform='translate('+Math.round((innerWidth-1920*k)/2)+'px,'+Math.round((innerHeight-1080*k)/2)+'px) scale('+k+')';
+}
 window.addEventListener('resize',scaleStage);scaleStage();
-
 document.getElementById('fullscreenBtn').onclick=()=>{
-  const stage=document.getElementById('stage');
-  if(!document.fullscreenElement){ stage.requestFullscreen?.(); }
-  else { document.exitFullscreen?.(); }
+ const stage=document.getElementById('stage');
+ if(!document.fullscreenElement){stage.requestFullscreen?.()}
+ else{document.exitFullscreen?.()}
 };
+requestAnimationFrame(draw);
+
 </script>
 </body>
 </html>
