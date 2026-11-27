@@ -6,8 +6,8 @@ function jsonp(api,params={},prefix='kgiAdmin_'){return new Promise((resolve,rej
  if(!valid){reject(Error('尚未設定 Google Apps Script 網址'));return;}
  const cb=prefix+Date.now()+'_'+(++seq),tag=document.createElement('script');let done=false;
  function finish(fn,value){if(done)return;done=true;clearTimeout(timer);tag.remove();delete window[cb];fn(value)}
- const timer=setTimeout(()=>finish(reject,Error('Google 回應逾時')),16000);
- window[cb]=value=>finish(resolve,value);tag.onerror=()=>finish(reject,Error('Google 資料讀取失敗'));
+ const timer=setTimeout(()=>finish(reject,Error('雲端連線超過16秒仍無回應。請先檢查 Apps Script 最新部署網址及存取權限。')),16000);
+ window[cb]=value=>finish(resolve,value);tag.onerror=()=>finish(reject,Error('雲端後端尚未正常回應。請確認 Apps Script 已部署包含 adminList 的新版 Code.gs 與 Bridge.gs，且網頁應用程式允許公開存取。'));
  tag.src=base+'?'+new URLSearchParams({api,callback:cb,...params,t:String(Date.now())});
  document.head.append(tag);
 })}
