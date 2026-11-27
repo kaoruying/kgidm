@@ -1,0 +1,63 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>企業家經營班｜照片管理</title><script src="./config.js"></script><style>*{box-sizing:border-box}body{margin:0;background:#f3f5fa;color:#183052;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif}header{background:#132e59;color:white;padding:23px max(22px,calc((100vw - 1050px)/2));font-size:23px;font-weight:700}main{max-width:1050px;margin:25px auto;padding:0 20px}section{background:white;border:1px solid #dfe5ef;border-radius:16px;padding:22px;box-shadow:0 8px 22px #132e5910}h1{font-size:23px;margin:0 0 18px}.tools{display:flex;justify-content:space-between;align-items:center;gap:14px}button{border:0;border-radius:9px;padding:10px 15px;background:#193e76;color:white;font-size:15px;cursor:pointer}button:disabled{opacity:.5}.status{color:#60718b;font-size:14px;line-height:1.6}.entry{border:1px solid #e5e9f1;border-radius:12px;padding:14px;display:flex;gap:14px;align-items:center;margin-top:12px;min-height:100px}.thumb{width:88px;height:102px;object-fit:contain;background:#f6f4ef;border-radius:7px}.info{flex:1;min-width:0}.name{font-weight:700;font-size:18px}.time{font-size:13px;color:#74819b;margin-top:6px;overflow-wrap:anywhere}.delete{border:1px solid #dd8883;background:#fff;color:#bd302c}.setup{max-width:450px;margin:28px auto}.setup p{line-height:1.8;color:#60718b}input{width:100%;padding:13px;border:1px solid #ccd5e4;border-radius:9px;font-size:16px;margin-bottom:12px}.hidden{display:none!important}@media(max-width:550px){header{font-size:19px}.thumb{width:62px;height:80px}.name{font-size:15px}.delete{font-size:12px;padding:8px}}</style></head><body><header>凱基人壽　企業家經營班</header><main><section id="gate" class="setup"><h1>決策卡管理後台</h1><p>為避免公開的管理網址被其他人用來刪除照片，請先輸入 Apps Script 產生的管理專用憑證。此憑證不會寫在 GitHub。</p><input id="tokenInput" type="password" placeholder="管理專用憑證" autocomplete="off"><button id="open">開啟管理</button><p class="status" id="gateStatus"></p></section><section id="panel" class="hidden"><div class="tools"><h1>已收到的決策卡</h1><button id="refresh">重新整理</button></div><p class="status" id="status"></p><div id="list"></div></section></main><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),base=String(window.KGI_GAS_URL||'').trim();let token=sessionStorage.getItem('kgi_admin_token')||'',seq=0,loading=false;
+const valid=/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(base);
+function jsonp(api,params={},prefix='kgiAdmin_'){return new Promise((resolve,reject)=>{
+ if(!valid){reject(Error('尚未設定 Google Apps Script 網址'));return;}
+ const cb=prefix+Date.now()+'_'+(++seq),tag=document.createElement('script');let done=false;
+ function finish(fn,value){if(done)return;done=true;clearTimeout(timer);tag.remove();delete window[cb];fn(value)}
+ const timer=setTimeout(()=>finish(reject,Error('Google 回應逾時')),16000);
+ window[cb]=value=>finish(resolve,value);tag.onerror=()=>finish(reject,Error('Google 資料讀取失敗'));
+ tag.src=base+'?'+new URLSearchParams({api,callback:cb,...params,t:String(Date.now())});
+ document.head.append(tag);
+})}
+async function load(){
+ if(loading)return;loading=true;$('status').textContent='讀取中…';
+ try{
+  const d=await jsonp('adminList',{token});if(!d.ok)throw Error(d.error||'無法取得管理權限');
+  $('status').textContent='目前共 '+d.cards.length+' 張決策卡；刪除後不保留灰色歷程。';
+  $('list').replaceChildren();
+  for(const rec of d.cards){
+   const row=document.createElement('div');row.className='entry';
+   const img=document.createElement('img');img.className='thumb';img.alt='決策卡';
+   const info=document.createElement('div');info.className='info';
+   const n=document.createElement('div');n.className='name';n.textContent=[rec.region,rec.office,rec.name].filter(Boolean).join('　');
+   const time=document.createElement('div');time.className='time';time.textContent=rec.at||'';
+   info.append(n,time);
+   const btn=document.createElement('button');btn.className='delete';btn.textContent='刪除照片';btn.onclick=()=>remove(rec.id,btn);
+   row.append(img,info,btn);$('list').append(row);
+   jsonp('cardImage',{id:rec.id},'kgiDisplay_').then(x=>{if(x.image)img.src=x.image}).catch(()=>{img.style.visibility='hidden'});
+  }
+ }catch(e){$('status').textContent='讀取失敗：'+String(e.message||e)}
+ finally{loading=false;}
+}
+async function remove(id,btn){
+ if(!confirm('確定刪除此張決策卡？照片會移到 Google Drive 垃圾桶，資料列也會刪除。'))return;
+ btn.disabled=true;btn.textContent='刪除中…';
+ const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);const receipt=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+ try{
+  await fetch(base,{method:'POST',mode:'no-cors',credentials:'omit',body:new URLSearchParams({api:'delete',receipt,token,id})});
+  let result={status:'pending'};
+  for(let i=0;i<15;i++){
+   await new Promise(r=>setTimeout(r,1300));
+   result=await jsonp('receipt',{receipt},'kgiReceipt_');
+   if(result.status!=='pending')break;
+  }
+  if(result.status!=='ok')throw Error(result.message||'尚未確認刪除結果，請先查看後台');
+  await load();
+ }catch(e){$('status').textContent='刪除狀態未確認：'+String(e.message||e)}
+ finally{btn.disabled=false;btn.textContent='刪除照片'}
+}
+$('open').onclick=async()=>{
+ token=$('tokenInput').value.trim();$('gateStatus').textContent='驗證中…';
+ try{
+  const d=await jsonp('adminList',{token});
+  if(!d.ok)throw Error(d.error||'權限不足');
+  sessionStorage.setItem('kgi_admin_token',token);
+  $('gate').classList.add('hidden');$('panel').classList.remove('hidden');load();
+ }catch(e){$('gateStatus').textContent=String(e.message||e)}
+};
+$('refresh').onclick=load;
+if(token){$('tokenInput').value=token;$('open').click();}
+})();
+</script></body></html>
