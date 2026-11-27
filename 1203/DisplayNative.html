@@ -176,7 +176,7 @@ function initDisplay(){
     let best=null;
     for(let rows=1;rows<=Math.min(n,8);rows++){
       const cols=Math.ceil(n/rows);
-      const w=Math.min(190,areaW/(cols*1.13),areaH/(rows*1.10)*.70);
+      const w=Math.min(190,areaW/(cols*1.13),Math.max(28,(areaH-rows*24)/rows)*.70);
       const score=w-Math.abs(cols/rows-3.6)*.65;
       if(!best||score>best.score)best={cols,rows,cardW:w,cardH:w/.70,areaW,areaH,b,score};
     }
@@ -193,7 +193,7 @@ function initDisplay(){
   }
   function updateLayout(){
     const n=Math.min(records.length,MAX_CARDS);if(!n)return;
-    const g=chooseGrid(n),gapX=Math.max(9,g.cardW*.12),gapY=Math.max(10,g.cardH*.09);
+    const g=chooseGrid(n),gapX=Math.max(9,g.cardW*.12),gapY=Math.max(18,g.cardH*.13);
     columns=g.cols;rows=g.rows;cellW=g.cardW+gapX;cellH=g.cardH+gapY;
     layoutW=g.cardW;layoutH=g.cardH;
     const totalH=rows*cellH-gapY,startY=g.b.top+(g.areaH-totalH)*.5;
@@ -202,10 +202,10 @@ function initDisplay(){
       const row=Math.floor(i/columns),col=i%columns;
       const count=Math.min(columns,n-row*columns);
       const rowWidth=count*cellW-gapX;
-      const stagger=row%2?Math.min(g.cardW*.15,(g.areaW-rowWidth)*.3):0;
+      const stagger=row%2?Math.min(g.cardW*.22,(g.areaW-rowWidth)*.25):-Math.min(g.cardW*.06,(g.areaW-rowWidth)*.1);
       const x0=g.b.left+(g.areaW-rowWidth)*.5+stagger;
       p.tx=x0+col*cellW+g.cardW*.5;
-      p.ty=startY+row*cellH+g.cardH*.5+Math.sin(col*.93+row)*Math.min(5,gapY*.3);
+      p.ty=startY+row*cellH+g.cardH*.5+Math.sin(col*.89+row*1.2)*Math.min(8,gapY*.36);
       p.targetW=g.cardW;p.targetH=g.cardH;
       p.driftX=Math.min(3,gapX*.14);p.driftY=Math.min(3,gapY*.13);
     });
@@ -275,7 +275,7 @@ function initDisplay(){
   function drawCard(c,now){
     const box=cardRect(c,now);
     if(!box||box.w<1||box.h<1)return;
-    const angle=Math.sin(now*.00031*c.pace+c.phase)*.015;
+    const angle=Math.sin(now*.00031*c.pace+c.phase)*.022 + Math.sin(c.phase*2.7)*.022;
     ctx.save();ctx.translate(box.x,box.y);ctx.rotate(angle);ctx.globalAlpha=c.opacity;
     ctx.shadowColor='rgba(4,14,36,.35)';ctx.shadowBlur=12;ctx.shadowOffsetY=5;
     ctx.drawImage(c.image,-box.w*.5,-box.h*.5,box.w,box.h);
