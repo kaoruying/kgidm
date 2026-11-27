@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>企業家經營班｜34張行動決策卡前台示意</title>
+<style>
+  :root{
+    --navy:#0c2f66;
+    --navy2:#163d7a;
+    --gold:#f0a62b;
+    --cream:#f6f0df;
+    --ink:#21406c;
+    --line:#dbcba7;
+  }
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:#0a2147;color:#fff;overflow:hidden}
+  .stage{
+    position:absolute;height:1080px;width:1920px;top:0;left:0;transform-origin:top left;overflow:hidden;
+    background:
+      radial-gradient(ellipse at 75% 44%, rgba(255,220,170,.5) 0%, rgba(255,220,170,.14) 22%, rgba(255,220,170,0) 46%),
+      linear-gradient(180deg,#08265a 0%,#34507f 54%,#14376d 100%);
+  }
+  .mountain{position:absolute;left:0;right:0;bottom:0;z-index:0;pointer-events:none}
+  .m1{height:34%;background:linear-gradient(180deg,rgba(205,195,211,.55),rgba(205,195,211,.2));clip-path:polygon(0 58%,11% 50%,19% 53%,31% 46%,46% 49%,55% 41%,67% 43%,79% 40%,100% 49%,100% 100%,0 100%)}
+  .m2{height:26%;background:linear-gradient(180deg,rgba(108,137,185,.28),rgba(108,137,185,.15));clip-path:polygon(0 70%,12% 61%,22% 68%,35% 56%,45% 70%,56% 54%,65% 66%,74% 58%,86% 69%,100% 61%,100% 100%,0 100%)}
+  .m3{height:16%;background:linear-gradient(180deg,rgba(20,46,96,.9),rgba(10,28,58,.95));clip-path:polygon(0 72%,10% 62%,20% 74%,31% 58%,43% 70%,54% 53%,68% 72%,80% 56%,91% 66%,100% 54%,100% 100%,0 100%)}
+
+  .title-badge{
+    position:absolute;left:28px;top:24px;z-index:3;
+    width:500px;max-width:500px;
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,.22));
+  }
+  .title-badge svg{width:100%;height:auto;display:block}
+  .brand{
+    position:absolute;right:28px;top:20px;z-index:3;
+    font-weight:800;font-size:30px;letter-spacing:.18em;
+    text-shadow:0 2px 8px rgba(0,0,0,.26);
+    white-space:nowrap;
+  }
+
+  .wall{
+    position:absolute;left:40px;right:40px;top:172px;bottom:125px;z-index:2;
+    display:grid;grid-template-columns:repeat(12, minmax(0,1fr));
+    grid-auto-rows:minmax(0,1fr);gap:13px 14px;align-items:center;justify-items:center;
+    padding:0 .4vw;
+  }
+  .card{
+    position:relative;
+    width:118px;
+    aspect-ratio:7/10;
+    background:var(--cream);
+    color:#2d3b53;
+    border:2px solid rgba(239,229,203,.92);
+    box-shadow:0 8px 18px rgba(0,0,0,.26), 0 0 0 1px rgba(155,132,86,.13) inset;
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease;
+    overflow:hidden;
+  }
+  .card:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 14px 24px rgba(0,0,0,.32), 0 0 0 1px rgba(155,132,86,.13) inset}
+  .card::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:22%;
+    background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0));pointer-events:none
+  }
+  .card-inner{padding:8px 8px 7px;height:100%;display:flex;flex-direction:column}
+  .minihead{font-size:6px;color:#876829;display:flex;justify-content:space-between;letter-spacing:.02em}
+  .minititle{margin-top:4px;font-size:8px;font-weight:800;color:#2c4880;line-height:1.15;text-align:center}
+  .question{margin-top:8px;font-size:6.3px;color:#8d6f35;font-weight:700}
+  .answer{margin-top:3px;font-size:8px;line-height:1.42;color:#30405d;min-height:56px;word-break:break-word}
+  .lines{margin-top:auto;display:grid;gap:6px;padding-top:4px}
+  .line{height:1px;background:#e4d8bb}
+  .member{margin-top:5px;font-size:7px;color:#c8922f;text-align:center;font-weight:700}
+
+  .r1{grid-row:1}.r2{grid-row:2}.r3{grid-row:3}
+  .c1{grid-column:1}.c2{grid-column:2}.c3{grid-column:3}.c4{grid-column:4}.c5{grid-column:5}.c6{grid-column:6}.c7{grid-column:7}.c8{grid-column:8}.c9{grid-column:9}.c10{grid-column:10}.c11{grid-column:11}.c12{grid-column:12}
+
+  .footer-quote{
+    position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:2;
+    font-size:30px;font-weight:800;letter-spacing:.12em;white-space:nowrap;
+    text-shadow:0 2px 10px rgba(0,0,0,.24);
+  }
+  .tools{position:absolute;right:24px;bottom:18px;display:flex;gap:12px;z-index:4}
+  .btn{
+    border:1px solid rgba(255,238,203,.78);color:#fff;background:rgba(7,32,72,.28);
+    border-radius:999px;padding:11px 18px;font-size:16px;font-weight:700;backdrop-filter:blur(4px);cursor:pointer;
+  }
+  .counter{position:absolute;left:0;bottom:0;z-index:4;background:rgba(11,24,53,.78);border-top:1px solid rgba(240,166,43,.45);padding:11px 16px;font-size:14px;color:#f7f3ea}
+
+  .overlay{position:fixed;inset:0;background:rgba(4,11,27,.88);display:none;align-items:center;justify-content:center;z-index:10;padding:28px}
+  .overlay.active{display:flex}
+  .overlay-card{
+    width:min(420px,88vw);aspect-ratio:7/10;background:var(--cream);color:#22324a;border:2px solid #f0e5cd;border-radius:4px;
+    box-shadow:0 24px 60px rgba(0,0,0,.45);position:relative;padding:20px 22px;display:flex;flex-direction:column
+  }
+  .overlay-card .minihead{font-size:12px}.overlay-card .minititle{font-size:18px}.overlay-card .question{font-size:12px}.overlay-card .answer{font-size:20px;min-height:150px}.overlay-card .member{font-size:14px}
+  .close{position:absolute;right:18px;top:14px;border:0;background:transparent;font-size:22px;color:#163d7a;font-weight:900;cursor:pointer}
+
+
+</style>
+<style>
+#fullscreenBtn{font-size:17px}
+#zoomPrompt{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:30;background:#102d5ce8;color:#fff;padding:6px 13px;border-radius:20px;font-size:12px;display:none}
+@media(max-width:700px){#zoomPrompt{display:block}}
+</style></head>
+<body>
+<div id="zoomPrompt">可點擊任一卡片放大檢視</div>
+<div class="stage" id="stage">
+  <div class="title-badge" aria-label="下一局，由我定義">
+    <svg viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg">
+      <path d="M41 104c17-21 89-37 195-49 133-15 251-9 376 1 58 5 120 4 156 17 18 6 28 18 23 36-5 17-16 42-21 54-14 1-29-4-42 2-31 14-39-4-66 4-20 6-34 1-55 0-47-1-101 10-143 4-48-7-95 7-144 11-42 4-89 0-132-2-28-2-60 0-86-8-41-13-72-19-78-43-6-24 0-21 17-27z" fill="#0a47a3"/>
+      <g fill="#fff2df" font-family="DFKai-SB, KaiTi, 'STKaiti', serif" font-weight="700">
+        <text x="75" y="155" font-size="98">下一局，由我定義</text>
+      </g>
+      <circle cx="354" cy="124" r="9" fill="#f0a62b"/>
+      <circle cx="711" cy="148" r="7" fill="#f0a62b"/>
+      <circle cx="730" cy="129" r="4.8" fill="#f0a62b"/>
+    </svg>
+  </div>
+  <div class="brand">凱基人壽　企業家經營班</div>
+
+  <div class="wall" id="wall"></div>
+
+  <div class="footer-quote">每一個決定，都是通往下一段成長的起點</div>
+  <div class="tools">
+    <button class="btn" id="fullscreenBtn">全螢幕</button>
+  </div>
+  <div class="counter">示意畫面．已顯示 34 / 34 張</div>
+
+  <div class="mountain m1"></div>
+  <div class="mountain m2"></div>
+  <div class="mountain m3"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-card" id="overlayCard">
+    <button class="close" id="closeBtn">✕</button>
+    <div class="minihead"><span>下一局，由我定義</span><span>企業家經營班</span></div>
+    <div class="minititle">行動決策卡</div>
+    <div class="question">我的下一步</div>
+    <div class="answer" id="ovAnswer"></div>
+    <div class="question">單位 / 姓名</div>
+    <div class="answer" id="ovName" style="min-height:auto;font-size:16px"></div>
+    <div class="lines"><div class="line"></div><div class="line"></div><div class="line"></div></div>
+    <div class="member" id="ovNo"></div>
+  </div>
+</div>
+
+<script>
+const sampleTexts = [
+  '建立新人名單池\n每週固定追蹤', '把增員行動\n從個人變成團隊節奏', '每月召開一次\n主管經營會議', '追蹤人員動能\n與活動量', '把目標拆成\n可執行的週任務', '導入固定一對一\n教練對話',
+  '優化單位早會\n提升互動參與度', '建立新人育成\n月曆與檢核', '盤點單位關鍵人才\n重新分工', '每週檢視數字\n不憑感覺管理', '建立人才招募\n轉介紹機制', '讓幹部先動起來\n形成示範',
+  '整理可複製的\n增員話術與流程', '重新定義主管角色\n從管理到經營', '每月固定進行\n組織盤點', '把成功個案\n做成團隊教材', '建立招募節奏\n不是臨時想到才做', '主管行事曆\n保留育成時段',
+  '檢視低效會議\n減少無效耗能', '聚焦單位下一季\n最重要一件事', '用數據看趨勢\n提早調整', '建立新主管\n帶組支持機制', '把問題點講清楚\n不只停在鼓勵', '設計每月成果回顧\n形成循環',
+  '讓同仁看見\n發展路徑', '培養幹部提案\n與承接能力', '盤點單位缺口\n補強關鍵能力', '用經營思維\n看待單位成長', '把育成責任\n納入主管日常', '建立週週追蹤\n不要月末才看',
+  '強化增員質量\n兼顧留存', '建立目標共識\n讓團隊同方向', '讓會議有結論\n有追蹤有改善', '下一局，由我定義\n立即開始'
+];
+const names = [
+  '北一｜王經理','北二｜李經理','桃竹｜陳經理','中嘉｜林經理','台南｜吳經理','高屏｜張經理',
+  '北一｜黃經理','北二｜周經理','桃竹｜徐經理','中嘉｜鄭經理','台南｜何經理','高屏｜高經理',
+  '北一｜羅經理','北二｜宋經理','桃竹｜朱經理','中嘉｜梁經理','台南｜謝經理','高屏｜蘇經理',
+  '北一｜馮經理','北二｜曹經理','桃竹｜曾經理','中嘉｜彭經理','台南｜潘經理','高屏｜杜經理',
+  '北一｜葉經理','北二｜鍾經理','桃竹｜呂經理','中嘉｜廖經理','台南｜蕭經理','高屏｜江經理',
+  '北一｜余經理','北二｜沈經理','桃竹｜程經理','中嘉｜許經理'
+];
+const positions = [
+  [1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],
+  [2,1],[2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],[2,9],[2,10],[2,11],[2,12],
+  [3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],[3,11]
+];
+const wall = document.getElementById('wall');
+const overlay = document.getElementById('overlay');
+const ovAnswer = document.getElementById('ovAnswer');
+const ovName = document.getElementById('ovName');
+const ovNo = document.getElementById('ovNo');
+
+sampleTexts.forEach((txt,idx)=>{
+  const [r,c]=positions[idx];
+  const card=document.createElement('article');
+  card.className=`card r${r} c${c}`;
+  const rot=[-2.5,1.2,-1.3,2.2,-1.8,1.8, -1.2,2.5,-2,1.3,-1.6,2, 1.5,-2.1,1.1,-1.4,2.3,-2.2,1.8,-1.3,1.7,-2.4,1.1,-1.7, -2.2,1.4,-1,2.1,-1.5,1.7,-2.1,1.2,-1.1,2.1][idx];
+  const y=[3,-2,2,-3,2,-2, 4,-1,3,-2,1,-1, -2,3,-3,1,-2,2, -1,2,-3,1,-2,3, 2,-3,2,-2,1,-1,3,-2,1,-2][idx];
+  card.style.transform=`rotate(${rot}deg) translateY(${y}px)`;
+  card.innerHTML=`<div class="card-inner">
+      <div class="minihead"><span>下一局，由我定義</span><span>企業家經營班</span></div>
+      <div class="minititle">行動決策卡</div>
+      <div class="question">我的下一步</div>
+      <div class="answer">${txt.replace(/\n/g,'<br>')}</div>
+      <div class="lines"><div class="line"></div><div class="line"></div><div class="line"></div></div>
+      <div class="member">測試 ${String(idx+1).padStart(2,'0')}</div>
+    </div>`;
+  card.dataset.answer=txt.replace(/\n/g,' / ');
+  card.dataset.name=names[idx];
+  card.dataset.no=`測試 ${String(idx+1).padStart(2,'0')}`;
+  card.addEventListener('click',()=>{
+    ovAnswer.innerHTML=txt.replace(/\n/g,'<br>');
+    ovName.textContent=names[idx];
+    ovNo.textContent=`示意卡片｜${card.dataset.no}`;
+    overlay.classList.add('active');
+  });
+  wall.appendChild(card);
+});
+
+document.getElementById('closeBtn').onclick=()=>overlay.classList.remove('active');
+overlay.addEventListener('click',e=>{if(e.target===overlay) overlay.classList.remove('active')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape') overlay.classList.remove('active')});
+
+
+function scaleStage(){ const root=document.getElementById('stage');const k=Math.min(window.innerWidth/1920,window.innerHeight/1080);root.style.transform='translate('+Math.round((window.innerWidth-1920*k)/2)+'px,'+Math.round((window.innerHeight-1080*k)/2)+'px) scale('+k+')';}
+window.addEventListener('resize',scaleStage);scaleStage();
+
+document.getElementById('fullscreenBtn').onclick=()=>{
+  const stage=document.getElementById('stage');
+  if(!document.fullscreenElement){ stage.requestFullscreen?.(); }
+  else { document.exitFullscreen?.(); }
+};
+</script>
+</body>
+</html>
