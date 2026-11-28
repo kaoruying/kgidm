@@ -226,9 +226,15 @@ for(let r=0;r<3;r++){
  }
 }
 function resize(){
- const bounds=wall.getBoundingClientRect();ratio=Math.min(devicePixelRatio||1,2);
- const w=bounds.width||W,h=bounds.height||H;
- canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);
+ // Stage is a fixed 1920x1080 scene scaled with CSS on mobile.
+ // getBoundingClientRect() returns the *scaled* size, so using it
+ // here shrinks the canvas bitmap twice and crops the 34-card wall.
+ // Always size the drawing surface in unscaled stage coordinates.
+ const w=wall.clientWidth||W;
+ const h=wall.clientHeight||H;
+ ratio=Math.min(window.devicePixelRatio||1,2);
+ canvas.width=Math.round(w*ratio);
+ canvas.height=Math.round(h*ratio);
  ctx.setTransform(ratio,0,0,ratio,0,0);
 }
 window.addEventListener('resize',resize);resize();
@@ -300,8 +306,13 @@ document.getElementById('closeBtn').onclick=()=>overlay.classList.remove('active
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('active')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')overlay.classList.remove('active')});
 function scaleStage(){
- const root=document.getElementById('stage'),k=Math.min(innerWidth/1920,innerHeight/1080);
- root.style.transform='translate('+Math.round((innerWidth-1920*k)/2)+'px,'+Math.round((innerHeight-1080*k)/2)+'px) scale('+k+')';
+ const root=document.getElementById('stage');
+ // Keep the entire 16:9 scene, including the course title and all 34 cards,
+ // inside the available device viewport.
+ const w=window.innerWidth,h=window.innerHeight;
+ const k=Math.min(w/1920,h/1080);
+ const x=Math.round((w-1920*k)/2), y=Math.round((h-1080*k)/2);
+ root.style.transform='translate('+x+'px,'+y+'px) scale('+k+')';
 }
 window.addEventListener('resize',scaleStage);scaleStage();
 document.getElementById('fullscreenBtn').onclick=()=>{
