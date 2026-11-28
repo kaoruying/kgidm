@@ -103,7 +103,7 @@
 @media(max-width:700px){#zoomPrompt{display:block}}
 </style><style>
 .wall{display:block!important;overflow:hidden!important;pointer-events:auto;z-index:4!important;top:205px!important;bottom:105px!important;left:48px!important;right:48px!important;padding:0!important}
-#swimCanvas{width:100%;height:100%;display:block;cursor:default;touch-action:manipulation}
+#swimCanvas{width:100%;height:100%;display:block;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .card{display:none!important}
 .counter{z-index:5}
 .tools{z-index:7}
@@ -114,7 +114,7 @@
 @media (prefers-reduced-motion: reduce){#swimCanvas{filter:none}}
 </style></head>
 <body>
-<div id="zoomPrompt">可點擊任一卡片放大檢視</div>
+<div id="zoomPrompt">輕觸卡片即可放大檢視</div>
 <div class="stage" id="stage">
   <div class="title-badge" aria-label="下一局，由我定義">
     <svg viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg">
@@ -285,22 +285,60 @@ function draw(now){
  }
  requestAnimationFrame(draw);
 }
-function hit(e){
- const bounds=canvas.getBoundingClientRect(),x=(e.clientX-bounds.left)*W/bounds.width,y=(e.clientY-bounds.top)*H/bounds.height;
- for(let i=hitAreas.length-1;i>=0;i--){
-  const c=hitAreas[i];if(Math.abs(x-c.x)<=CELL_W/2&&Math.abs(y-c.y)<=CELL_H/2)return c;
+
+/* 手機觸控專用：將手機點擊座標正確換算到縮放後的 Canvas 2D 畫布。
+   小螢幕卡片太密時，選擇附近最近的一張，而非要求精確命中幾個像素。 */
+function locateCard(clientX,clientY,isTouch=false){
+ const bounds=canvas.getBoundingClientRect();
+ if(!bounds.width||!bounds.height)return null;
+ const x=(clientX-bounds.left)*W/bounds.width;
+ const y=(clientY-bounds.top)*H/bounds.height;
+ const scale=Math.min(bounds.width/W,bounds.height/H);
+ const padding=isTouch?Math.min(110,Math.max(14,17/Math.max(.12,scale))):5;
+ let best=null,bestScore=Infinity;
+ for(const c of cards){
+   const dx=Math.max(0,Math.abs(x-c.x)-CELL_W/2);
+   const dy=Math.max(0,Math.abs(y-c.y)-CELL_H/2);
+   const dist=Math.hypot(dx,dy);
+   if(dist<=padding){
+     const score=dist*1.5 + Math.hypot(x-c.x,y-c.y)*.12;
+     if(score<bestScore){best=c;bestScore=score}
+   }
  }
- return null;
+ return best;
 }
-canvas.addEventListener('pointermove',e=>{
- const c=hit(e);hover=c?c.i:-1;canvas.style.cursor=c?'pointer':'default';
-});
-canvas.addEventListener('pointerleave',()=>{hover=-1;canvas.style.cursor='default'});
-canvas.addEventListener('click',e=>{
- const c=hit(e);if(!c)return;
+function openCard(c){
+ if(!c)return;
  ovAnswer.innerHTML=sampleTexts[c.i].split('\n').join('<br>');
- ovName.textContent=names[c.i];ovNo.textContent='示意卡片｜測試 '+String(c.i+1).padStart(2,'0');
+ ovName.textContent=names[c.i];
+ ovNo.textContent='示意卡片｜測試 '+String(c.i+1).padStart(2,'0');
  overlay.classList.add('active');
+}
+let lastTouchOpen=0;
+canvas.addEventListener('pointermove',e=>{
+ if(e.pointerType==='touch')return;
+ const c=locateCard(e.clientX,e.clientY,false);
+ hover=c?c.i:-1;
+ canvas.style.cursor=c?'pointer':'default';
+});
+canvas.addEventListener('pointerleave',()=>{
+ hover=-1;canvas.style.cursor='default';
+});
+canvas.addEventListener('pointerup',e=>{
+ if(e.pointerType==='touch'||e.pointerType==='pen'){
+   const c=locateCard(e.clientX,e.clientY,true);
+   if(c){lastTouchOpen=Date.now();openCard(c)}
+ }
+});
+canvas.addEventListener('touchend',e=>{
+ if(Date.now()-lastTouchOpen<450)return;
+ const t=e.changedTouches?.[0];if(!t)return;
+ const c=locateCard(t.clientX,t.clientY,true);
+ if(c){lastTouchOpen=Date.now();openCard(c)}
+},{passive:true});
+canvas.addEventListener('click',e=>{
+ if(Date.now()-lastTouchOpen<650)return;
+ openCard(locateCard(e.clientX,e.clientY,e.detail===0));
 });
 document.getElementById('closeBtn').onclick=()=>overlay.classList.remove('active');
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('active')});
